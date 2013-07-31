@@ -1,0 +1,6 @@
+name = MPay24 (Payment)
+description = A payment method type that uses mpay24.com
+core = 7.x
+dependencies[] = payment
+package = Payment
+files[] = mpay24_payment.module

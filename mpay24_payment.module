@@ -1,0 +1,93 @@
+<?php
+
+module_load_include('inc', 'mpay24_payment', 'mpay24_payment_method_controller_credit');
+
+define('PAYMENT_STATUS_REDIRECT', 'payment_status_redirect');
+
+/**
+ * Implements hook_payment_method_controller_info().
+ */
+function mpay24_payment_payment_method_controller_info() {
+  return array('PaymentMethodControllerMPay24CreditCard');
+}
+
+/**
+ * Form build callback: implements
+ * PaymentMethodController::payment_method_configuration_form_elements_callback.
+ *
+ * @return array
+ *   A Drupal form.
+ */
+function mpay24_payment_payment_method_configuration_form_elements(array $form, array &$form_state) {
+  $controller_data = $form_state['payment_method']->controller_data;
+
+  $elements['merchantid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('MPay24 MerchantID'),
+    '#description' => t('Available from MPay24 support.'),
+    '#default_value' => isset($controller_data['merchantid']) ? $controller_data['merchantid'] : '',
+  );
+
+  $elements['testmode'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use the test API') . ' (test.mpay24.com)',
+    '#description' => t('Requires a different MerchantID.'),
+    '#default_value' => isset($controller_data['testmode']) ? $controller_data['testmode'] : '',
+  );
+
+  $elements['request_timeout'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Timeout for payment requests'),
+    '#description'   => t('Timeout for the payment request to MPay24 (in Seconds).'),
+    '#default_value' => isset($controller_data['request_timeout']) ? $controller_data['request_timeout'] : 100.0,
+  );
+
+  return $elements;
+}
+
+/**
+ * Implements form validate callback for
+ * payment_mpay24_payment_method_configuration_form_elements().
+ */
+function mpay24_payment_payment_method_configuration_form_elements_validate(array $element, array &$form_state) {
+  $values = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
+  $form_state['payment_method']->controller_data['request_timeout'] = $values['request_timeout'];
+  $form_state['payment_method']->controller_data['merchantid'] = $values['merchantid'];
+  $form_state['payment_method']->controller_data['testmode'] = $values['testmode'];
+}
+
+/**
+ * ************************************
+ * Payment Method entity CRUD functions
+ * ************************************
+ */
+
+/**
+ * Implements hook_entity_load().
+ */
+function mpay24_payment_entity_load(array $entities, $entity_type) {
+  if ($entity_type == 'payment_method') {
+    PaymentMethodControllerMPay24::load($entities);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_ACTION().
+ */
+function mpay24_payment_payment_method_insert(PaymentMethod $method) {
+  PaymentMethodControllerMPay24::insert($method);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_ACTION().
+ */
+function mpay24_payment_payment_method_update(PaymentMethod $method) {
+  PaymentMethodControllerMPay24::update($method);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_ACTION().
+ */
+function mpay24_payment_payment_method_delete($entity) {
+  PaymentMethodControllerMPay24::delete($entity);
+}

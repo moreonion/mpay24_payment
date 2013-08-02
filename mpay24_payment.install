@@ -36,6 +36,12 @@ function mpay24_payment_schema() {
         'type'     => 'float',
         'unsigned' => TRUE,
       ),
+      'tid' => array(
+        'type'        => 'varchar',
+        'length'      => 33,
+        'not null'    => FALSE,
+        'description' => 'transaction ID for mpay24',
+      )
     ),
     'primary key' => array('pmid'),
     'unique keys' => array(

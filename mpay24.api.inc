@@ -18,14 +18,13 @@ define('MPAY24_PAYMENT_CONFIRM_URL', 'mpay24_payment/confirm');
 
 
 class Request {
-    var $data = array();
-
     /**
      * Constructs a new generic Request.
      * Tipp: Call one of the static methods instead of using this directly.
      */
     function __construct(&$payment) {
         $this->payment = $payment;
+        $this->data = array();
 
         if($this->getTestMode()) {
             $this->api_url = MPAY24_PAYMENT_TEST_API_URL;
@@ -105,11 +104,7 @@ class Request {
         $options = array(
             'method' => 'POST',
             'data'   => drupal_http_build_query($this->data));
-
         $this->response = drupal_http_request($this->api_url, $options);
-
-        return array($this->tid,
-            new Response($this->payment, $this->response));
     }
 
     protected function addData($data) {
@@ -161,7 +156,7 @@ class Request {
      *
      * @return string TID
      */
-    static function generateTID($extra_salt) {
+    protected function generateTID($extra_salt) {
         $components = array(
             $this->payment->description,
             $this->getCustomerName(),
@@ -217,6 +212,8 @@ class Request {
 
 }
 
+
+/*
 class Response {
     var $parsed_data = array();
 
@@ -227,64 +224,62 @@ class Response {
         $payment->setStatus(new \PaymentStatusItem(PAYMENT_STATUS_FAILED));
         $this->handle();
         entity_save('payment', $this->payment);
-}
+    }
 
-public function handle() {
-    if(isset($this->response->code)
+    public function handle() {
+      if(isset($this->response->code)
         && $this->response->code === '200') {
 
-            parse_str(rtrim($this->response->data), $this->data);
-            $this->data = array_change_key_case($this->data);
+        parse_str(rtrim($this->response->data), $this->data);
+        $this->data = array_change_key_case($this->data);
 
-            if($this->data['status'] === 'OK') {
-                $this->handleReturnCode();
-} else {
-    $this->handleAPIError();
-}
-} else {
-    $this->handleHTTPError();
-}
-}
-
-function handleReturnCode() {
-    switch($this->data['returncode']) {
-    case 'REDIRECT':
-        $this->payment->setStatus(
+        if($this->data['status'] === 'OK') {
+          $this->handleReturnCode();
+        } else {
+          $this->handleAPIError();
+        }
+      } else {
+        $this->handleHTTPError();
+      }
+    }
+    function handleReturnCode() {
+      switch($this->data['returncode']) {
+        case 'REDIRECT':
+          $this->payment->setStatus(
             new \PaymentStatusItem(PAYMENT_STATUS_REDIRECT));
-        $this->payment->context_data['redirect_url'] = $this->data['location'];
-        break;
-    case 'OK':
-      //$this->payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_RETURNED));
-        break;
-    default:
-        $this->handleAPIError();
-}
-}
+          $this->payment->context_data['redirect_url'] = $this->data['location'];
+          break;
+        case 'OK':
+          //$this->payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_RETURNED));
+          break;
+        default:
+          $this->handleAPIError();
+      }
+    }
 
-function handleAPIError() {
-    $this->handleError('@payment_method payment method encountered some error while contacting the mPay24 server. The code is "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid', array(
-        '@code'			=> $this->data['returncode'],
-        '@error'		=> isset($this->data['external_error'])
-        ? $this->data['external_error']: "",
-        '@pid'			=> $this->payment->pid,
-        '@pmid'			=> $this->payment->method->pmid,
-        '@payment_method'	=> $this->payment->method->title_generic,
-    ));
-}
+    function handleAPIError() {
+      $this->handleError('@payment_method payment method encountered some error while contacting the mPay24 server. The code is "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid', array(
+          '@code'			=> $this->data['returncode'],
+          '@error'		=> isset($this->data['external_error'])
+          ? $this->data['external_error']: "",
+          '@pid'			=> $this->payment->pid,
+          '@pmid'			=> $this->payment->method->pmid,
+          '@payment_method'	=> $this->payment->method->title_generic,
+        ));
+    }
 
-function handleHTTPError() {
-    $this->handleError('@payment_method payment method encountered some HTTP error while trying to contact the mPay24 server. Error code "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid', array(
-        '@code'           => $this->response->code,
-        '@error'          => $this->response->error,
-        '@pid'            => $this->payment->pid,
-        '@pmid'           => $this->payment->method->pmid,
-        '@payment_method' => $this->payment->method->title_generic,
-    ));
-}
+    function handleHTTPError() {
+      $this->handleError('@payment_method payment method encountered some HTTP error while trying to contact the mPay24 server. Error code "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid', array(
+          '@code'           => $this->response->code,
+          '@error'          => $this->response->error,
+          '@pid'            => $this->payment->pid,
+          '@pmid'           => $this->payment->method->pmid,
+          '@payment_method' => $this->payment->method->title_generic,
+        ));
+    }
 
-function handleError($message, $args = array(), $options = array()) {
-    throw new \Exception(t($message, $args, $options));
+    function handleError($message, $args = array(), $options = array()) {
+      throw new \Exception(t($message, $args, $options));
+    }
 }
-
-
-}
+*/

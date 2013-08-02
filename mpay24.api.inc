@@ -33,29 +33,30 @@ class Request {
         $this->payment->tid = $this->generateTID(time());
     }
 
-    public static function creditCard(&$payment, $data) {
+    public static function creditCard(&$payment) {
         $obj = new Request($payment);
+        $method_data = &$payment->method_data;
 
         // MPay24 expects YYMM instead of MMYY as the dates format.
-        $expiry_date = date_create_from_format("my", $data['expiry_date']);
-        $data['expiry_date'] = $expiry_date->format("ym");
+        $expiry_date = date_create_from_format("my", $method_data['expiry_date']);
+        $method_data['expiry_date'] = $expiry_date->format("ym");
 
         $obj->prepare('ACCEPTPAYMENT');
         $obj->addData(array(
             'P_TYPE'     => 'CC',
-            'BRAND'      => $data['brand'],
-            'IDENTIFIER' => $data['credit_card_number'],
-            'EXPIRY'     => $data['expiry_date'],
-            'CVC'        => $data['secure_code'],
-            'AUTH_3DS'   => isset($data['auth_3ds']) ? $data['auth_3ds'] : 'N',
+            'BRAND'      => $method_data['issuer'],
+            'IDENTIFIER' => $method_data['credit_card_number'],
+            'EXPIRY'     => $method_data['expiry_date'],
+            'CVC'        => $method_data['secure_code'],
+            'AUTH_3DS'   => isset($method_data['auth_3ds']) ? $method_data['auth_3ds'] : 'N',
         ));
 
         return $obj->send();
     }
 
-    public static function onlineBanking(&$payment, $data) {
+    public static function onlineBanking(&$payment) {
         $obj = new Request($payment);
-        $obj->addData($data);
+        $obj->addData($data, $payment->method_data);
         $obj->enabled_payment_types = array('EPS');
         $obj->prepare('SELECTPAYMENT');
 
@@ -161,7 +162,8 @@ class Request {
 
     protected function getCustomerName() {
         // make sure that this is in the payment data
-        return $this->payment->method_data['full_name'];
+        return $this->payment->method_data['first_name'] .
+          $this->payment->method_data['last_name'];
     }
 
     protected function getMerchantID() {

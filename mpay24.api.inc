@@ -98,6 +98,7 @@ class Request {
             'method' => 'POST',
             'data'   => drupal_http_build_query($this->data));
         $this->response = drupal_http_request($this->api_url, $options);
+        return $this->response;
     }
 
     protected function addData($data) {

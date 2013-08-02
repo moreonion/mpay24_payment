@@ -99,7 +99,12 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
     if(empty($value)) {
       form_error($element[$key], t('@name is required', array('@name' => $element[$key]['#title'])));
     }
-    $form_state['payment']->method_data[$key] = $value;
+
+    if ($element[$key]['#type'] === 'select') {
+      $form_state['payment']->method_data[$key] = $element[$key]['#options'][$value];
+    } else {
+      $form_state['payment']->method_data[$key] = $value;
+    }
   }
 
 }

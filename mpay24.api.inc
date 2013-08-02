@@ -1,4 +1,4 @@
-<?php /**
+<?php namespace mpay24; /**
 * @file
 * Provides a class to make communication with mpay24 services easier.
 *
@@ -7,8 +7,6 @@
 *
 * @todo Request::$data should be replaced by $payment->method_data
 */
-
-namespace mpay24;
 
 define('MPAY24_PAYMENT_TEST_API_URL', 'https://test.mpay24.com/app/bin/etpv5');
 define('MPAY24_PAYMENT_API_URL', 'https://mpay24.com/app/bin/etpv5');

@@ -20,7 +20,7 @@ function mpay24_payment_confirmation_interface_handler() {
 
     $query = new EntityFieldQuery();
     $result = $query->entityCondition('entity_type', 'payment')
-      ->propertyCondition('tid', $_GET['TID'])
+      ->propertyCondition('mpay24_tid', $_GET['TID'])
       ->execute();
 
     if (count($result['payment']) != 1) {
@@ -53,7 +53,7 @@ function mpay24_payment_confirmation_interface_handler() {
 
     db_insert('mpay24_payment_confirmation_interface')
       ->fields(array(
-          'tid'       => $request['TID'],
+          'mpay24_tid'=> $request['TID'],
           'status'    => $request['STATUS'],
           'mpaytid'   => $request['MPAYTID'],
           'timestamp' => REQUEST_TIME,

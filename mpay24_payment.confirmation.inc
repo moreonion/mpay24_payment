@@ -124,7 +124,7 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
 function mpay24_payment_confirmation_status(Payment $payment) {
   $result = db_select('mpay24_payment_confirmation_interface', 's')
     ->fields('s', array('status', 'timestamp'))
-    ->condition('tid', $payment->tid)
+    ->condition('tid', $payment->mpay24_tid)
     ->orderBy('timestamp', 'DESC')
     ->range(0, 1)
     ->execute()

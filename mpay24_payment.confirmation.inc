@@ -78,7 +78,7 @@ function mpay24_payment_confirmation_interface_handler() {
     exit(0); // need to get unthemed output.
   } catch (PaymentException $e) {
     drupal_add_http_header('Content-Type', 'text/plain');
-    print 'ERROR: ' . $e->message;
+    print 'ERROR: ' . $e->getMessage();
     exit(0); // need to get unthemed output.
   }
 }

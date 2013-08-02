@@ -10,6 +10,14 @@ define('PAYMENT_MPAY24_STATUS_REDIRECT', 'payment_mpay24_status_redirect');
 function mpay24_payment_menu() {
   $items = array();
 
+  $items['mpay24_payment/confirm'] = array(
+    'title' => 'Confirmation Interface',
+    'page callback' => 'mpay24_payment_confirmation_interface_handler',
+    'access callback' => TRUE, // @todo: check mpay24 ip.
+    'type' => MENU_CALLBACK,
+    'file' => 'mpay24_payment.confirmation.inc',
+  );
+
   $items['mpay24_payment/confirm/wait/%entity_object'] = array(
     'load arguments' => array('payment'),
     'page callback' => 'mpay24_payment_confirmation_wait',

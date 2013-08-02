@@ -85,8 +85,8 @@ class Request {
                     'TID'              => $this->payment->tid,
                     'PRICE'            => $this->payment->totalAmount(false),
                     'CUSTOMER'         => $this->getCustomerName(),
-                    'SUCCESS_URL'      => $this->getSuccessURL(),
-                    'ERROR_URL'        => $this->getErrorURL(),
+                    //'SUCCESS_URL'      => $this->getSuccessURL(),
+                    //'ERROR_URL'        => $this->getErrorURL(),
                     'CONFIRMATION_URL' => $this->getConfirmationURL(),
                 )
             );
@@ -185,7 +185,7 @@ class Request {
 
     protected function buildURL($relative) {
         return url($relative, array(
-                'absolute' => false,
+                'absolute' => true,
                 'https'    => !$this->getTestMode(),
             )
         );
@@ -198,11 +198,11 @@ class Request {
     }
 
     protected function getErrorURL() {
-        return $this->buildURL(MPAY24_PAYMENT_ERROR_URL . '/' . $this->payment->pid);
+      return $this->buildURL(MPAY24_PAYMENT_ERROR_URL . '/' . $this->payment->pid);
     }
 
     protected function getConfirmationURL() {
-        $this->confirmation_url = $this->buildURL(MPAY24_PAYMENT_CONFIRM_URL);
+      return $this->buildURL('mpay24_payment/confirm');
     }
 
 }

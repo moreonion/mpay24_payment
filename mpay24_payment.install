@@ -70,12 +70,40 @@ function mpay24_payment_schema() {
       ),
     ),
     'foreign keys' => array(
-      'payment' => array(
-        'table'   => 'payment',
+      'mpay24_payment' => array(
+        'table'   => 'mpay24_payment_tids',
         'columns' => array('tid' => 'tid'),
       ),
     ),
   );
+
+  $schema['mpay24_payment_tids'] = array(
+    'fields' => array(
+      'pid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'tid' => array(
+        'description' => 'Merchant\'s transaction ID for mpay24.',
+        'type'        => 'varchar',
+        'length'      => 33,
+        'not null'    => TRUE,
+        'unique'      => TRUE,
+      ),
+    ),
+    'foreign keys' => array(
+      'payment' => array(
+        'table'   => 'payment',
+        'columns' => array('pid' => 'pid'),
+      ),
+    ),
+    'primary key' => array('pid'),
+    'unique keys' => array(
+      'pid' => array('pid'),
+    ),
+  );
+
 
   return $schema;
 }
@@ -86,7 +114,8 @@ function mpay24_payment_schema() {
  * This is called to add a column for the transaction ID to the payment table
  */
 function mpay24_payment_install() {
-  db_add_field('payment', 'mpay24_tid',
+  /*
+    db_add_field('payment', 'mpay24_tid',
     array(
       'type'        => 'varchar',
       'length'      => 33,
@@ -94,6 +123,7 @@ function mpay24_payment_install() {
       'description' => 'transaction ID for mpay24',
     )
   );
+  */
 }
 
 /**

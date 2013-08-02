@@ -18,17 +18,19 @@ function mpay24_payment_confirmation_interface_handler() {
         'Can\'t handle confirmation request without a valid transaction ID.');
     }
 
-    $query = new EntityFieldQuery();
-    $result = $query->entityCondition('entity_type', 'payment')
-      ->propertyCondition('mpay24_tid', $_GET['TID'])
-      ->execute();
+    $pid = db_select('mpay24_payment_tids', 't')
+      ->fields('t', array('pid'))
+      ->condition('t.tid', $_GET['TID'])
+      ->range(0,1)
+      ->execute()
+      ->fetchField();
 
-    if (count($result['payment']) != 1) {
+    if ($pid === false) {
       throw new PaymentException(
         'Can\'t find matching payment object for this transaction ID.');
     }
 
-    $payments = entity_load('payment', array_keys($result['payment']));
+    $payments = entity_load('payment', array($pid));
     $payment = array_shift($payments);
 
     $request = array();

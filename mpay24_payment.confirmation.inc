@@ -55,7 +55,7 @@ function mpay24_payment_confirmation_interface_handler() {
 
     db_insert('mpay24_payment_confirmation_interface')
       ->fields(array(
-          'mpay24_tid'=> $request['TID'],
+          'tid'       => $request['TID'],
           'status'    => $request['STATUS'],
           'mpaytid'   => $request['MPAYTID'],
           'timestamp' => REQUEST_TIME,
@@ -124,9 +124,11 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
 }
 
 function mpay24_payment_confirmation_status(Payment $payment) {
-  $result = db_select('mpay24_payment_confirmation_interface', 's')
-    ->fields('s', array('status', 'timestamp'))
-    ->condition('tid', $payment->mpay24_tid)
+  $query = db_select('mpay24_payment_confirmation_interface', 's')
+    ->fields('s', array('status', 'timestamp'));
+  $query->join('mpay24_payment_tids', 't', 's.tid = t.tid');
+  $query->condition('t.pid', $payment->pid);
+  $result = $query
     ->orderBy('timestamp', 'DESC')
     ->range(0, 1)
     ->execute()

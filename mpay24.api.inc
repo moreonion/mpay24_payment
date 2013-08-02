@@ -32,13 +32,7 @@ class Request {
             $this->api_url = MPAY24_PAYMENT_API_URL;
         }
 
-
-        $this->tid = $this->generateTID(time());
-
-        // TODO Check if this is necessary
-        $payment_wrapper = entity_metadata_wrapper('payment', $this->payment);
-        $payment_wrapper->tid->set($this->tid);
-        $payment_wrapper->save();
+        $this->payment->tid = $this->generateTID(time());
     }
 
     public static function creditCard(&$payment, $data) {
@@ -89,7 +83,7 @@ class Request {
             $this->addData(
                 array(
                     'CURRENCY'         => 'EUR',
-                    'TID'              => $this->tid,
+                    'TID'              => $this->payment->tid,
                     'PRICE'            => $this->payment->totalAmount(false),
                     'CUSTOMER'         => $this->getCustomerName(),
                     'SUCCESS_URL'      => $this->getSuccessURL(),
@@ -130,7 +124,7 @@ class Request {
 
         return '<?xml version="1.0" encoding="UTF-8"?>' .
             '<Order>' .
-            '  <Tid>' . $this->tid . '</Tid>' .
+            '  <Tid>' . $this->payment->tid . '</Tid>' .
             '  <PaymentTypes Enable="false">' . $disabled_types . '</PaymentTypes>' .
             '  <ShoppingCart>' .
             '    <Description>' . $this->payment->description . '</Description>' .

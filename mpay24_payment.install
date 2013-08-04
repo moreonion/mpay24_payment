@@ -118,16 +118,6 @@ function mpay24_payment_schema() {
  * This is called to add a column for the transaction ID to the payment table
  */
 function mpay24_payment_install() {
-  /*
-    db_add_field('payment', 'mpay24_tid',
-    array(
-      'type'        => 'varchar',
-      'length'      => 33,
-      'not null'    => FALSE,
-      'description' => 'transaction ID for mpay24',
-    )
-  );
-  */
 }
 
 /**
@@ -137,5 +127,4 @@ function mpay24_payment_install() {
  * that was added by hook_install
  */
 function mpay24_payment_uninstall() {
-  db_drop_field('payment', 'mpay24_tid');
 }

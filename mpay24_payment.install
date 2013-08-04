@@ -45,6 +45,9 @@ function mpay24_payment_schema() {
 
   $schema['mpay24_payment_confirmation_interface'] = array(
     'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+      ),
       'tid' => array(
         'description' => 'Merchant\'s transaction ID for mpay24.',
         'type'        => 'varchar',
@@ -69,6 +72,7 @@ function mpay24_payment_schema() {
         'unsigned'    => TRUE,
       ),
     ),
+    'primary key' => array('id'),
     'foreign keys' => array(
       'mpay24_payment' => array(
         'table'   => 'mpay24_payment_tids',

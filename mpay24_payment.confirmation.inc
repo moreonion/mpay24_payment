@@ -129,7 +129,7 @@ function mpay24_payment_confirmation_status(Payment $payment) {
   $query->join('mpay24_payment_tids', 't', 's.tid = t.tid');
   $query->condition('t.pid', $payment->pid);
   $result = $query
-    ->orderBy('timestamp', 'DESC')
+    ->orderBy('id', 'DESC')
     ->range(0, 1)
     ->execute()
     ->fetchAssoc();

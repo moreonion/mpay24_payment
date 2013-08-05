@@ -3,30 +3,41 @@ jQuery(document).ready(function() {
         current_time_in_seconds: function () {
             return Math.floor(new Date().getTime() / 1000);
         },
+
         poll: function () {
             jQuery.ajax({
                 contentType: 'application/json',
-                url: "/mpay24_payment/confirm/status/"+Drupal.settings.mpay24_payment.pid,
+                url: Drupal.settings.mpay24_payment.status_url + Drupal.settings.mpay24_payment.pid,
                 success: function(data) {
                     console.log('status', data.status);
                     if (data.status === null) {
-                        setTimeout(function() { this.poll(); }, 1000);
+                        setTimeout(function() {
+                            if (window.mpay24_payment.current_time_in_seconds() < window.mpay24_payment.timeout) {
+                                window.mpay24_payment.poll();
+                            } else {
+                                window.mpay24_payment.error('timeout');
+                            }
+                        }, 1000);
                     }
                     else if (data.status === 'success') {
                         window.location.replace(Drupal.settings.mpay24_payment.success_url);
                     } else {
-                        //window.location.replace("/" + Drupal.settings.payment_mpay24.error_url +
-                        //"/" + Drupal.settings.payment_mpay24.pid);
+                        window.mpay24_payment.error('server error');
                     }
                 },
                 error: function(data) {
-                    //window.location.replace("/" + Drupal.settings.payment_mpay24.error_url +
-                    //"/" + Drupal.settings.payment_mpay24.pid);
+                    window.mpay24_payment.error('failed http request');
                 },
             });
         },
+
+        error: function(reason) {
+            var s = Drupal.settings.mpay24_payment;
+            window.location.replace(s.error_url + s.pid);
+        },
+
         init: function() {
-            this.start = this.current_time_in_seconds();
+            this.timeout = this.current_time_in_seconds() + Drupal.settings.mpay24_payment.timeout;
             this.poll();
         }
     };

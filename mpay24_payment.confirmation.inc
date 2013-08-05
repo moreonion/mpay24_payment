@@ -104,13 +104,18 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
         array('@pid' => $payment->pid)));
   }
 
+  $url_options = array(
+    'absolute' => true,
+    'https'    => true,
+  );
   drupal_add_js(
     array(
       'mpay24_payment' => array(
         'pid' => $payment->pid,
         'timeout' => empty($payment->method->controller_data['timeout']) ? 30 : $payment->method->controller_data['request_timeout'],
-        'success_url'  => $success_url,
-        //'error_url' => PAYMENT_MPAY24_ERROR_URL,
+        'success_url' => $success_url,
+        'error_url'   => url(MPAY24_PAYMENT_ERROR_URL, $url_options),
+        'status_url' => url(MPAY24_PAYMENT_CONFIRMATION_STATUS_URL, $url_options),
       ),
     ), 'setting');
 
@@ -154,4 +159,12 @@ function mpay24_payment_confirmation_status(Payment $payment) {
       drupal_json_output(array('status' => NULL));
   }
   exit(0);
+}
+
+function mpay24_payment_confirmation_error(Payment $payment) {
+  watchdog('mpay24_payment', 'Reported an error to the user of Payment @pid.', array('@pid' => $payment->pid));
+
+  return array(
+    '#markup' => '<div class="mo-dialog-wrapper visible"><div class="mo-dialog-content loading"><p>'.t('An error occured. Please try again later.').'</p></div></div>'
+  );
 }

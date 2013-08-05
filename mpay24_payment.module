@@ -4,13 +4,17 @@ module_load_include('inc', 'mpay24_payment', 'mpay24_payment_method_controller_c
 
 define('PAYMENT_MPAY24_STATUS_REDIRECT', 'payment_mpay24_status_redirect');
 
+define('MPAY24_PAYMENT_CONFIRMATION_URL', 'mpay24_payment/confirm/');
+define('MPAY24_PAYMENT_CONFIRMATION_STATUS_URL', 'mpay24_payment/confirm/status/');
+define('MPAY24_PAYMENT_ERROR_URL', 'mpay24_payment/confirm/error/');
+
 /**
  * Implements hook_menu()
  */
 function mpay24_payment_menu() {
   $items = array();
 
-  $items['mpay24_payment/confirm'] = array(
+  $items[MPAY24_PAYMENT_CONFIRMATION_URL] = array(
     'title' => 'Confirmation Interface',
     'page callback' => 'mpay24_payment_confirmation_interface_handler',
     'access callback' => TRUE, // @todo: check mpay24 ip.
@@ -18,9 +22,9 @@ function mpay24_payment_menu() {
     'file' => 'mpay24_payment.confirmation.inc',
   );
 
-  $items['mpay24_payment/confirm/wait/%entity_object'] = array(
+  $items[MPAY24_PAYMENT_ERROR_URL . '%entity_object'] = array(
     'load arguments' => array('payment'),
-    'page callback' => 'mpay24_payment_confirmation_wait',
+    'page callback' => 'mpay24_payment_confirmation_error',
     'page arguments' => array(3),
     'access callback' => 'mpay24_payment_confirmation_access',
     'access arguments' => array(3),
@@ -28,9 +32,19 @@ function mpay24_payment_menu() {
     'file' => 'mpay24_payment.confirmation.inc',
   );
 
-  $items['mpay24_payment/confirm/status/%entity_object'] = array(
+  $items[MPAY24_PAYMENT_CONFIRMATION_STATUS_URL . '%entity_object'] = array(
     'load arguments' => array('payment'),
     'page callback' => 'mpay24_payment_confirmation_status',
+    'page arguments' => array(3),
+    'access callback' => 'mpay24_payment_confirmation_access',
+    'access arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'file' => 'mpay24_payment.confirmation.inc',
+  );
+
+  $items['mpay24_payment/confirm/wait/%entity_object'] = array(
+    'load arguments' => array('payment'),
+    'page callback' => 'mpay24_payment_confirmation_wait',
     'page arguments' => array(3),
     'access callback' => 'mpay24_payment_confirmation_access',
     'access arguments' => array(3),

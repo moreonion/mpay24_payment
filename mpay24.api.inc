@@ -11,10 +11,6 @@
 define('MPAY24_PAYMENT_TEST_API_URL', 'https://test.mpay24.com/app/bin/etpv5');
 define('MPAY24_PAYMENT_API_URL', 'https://mpay24.com/app/bin/etpv5');
 
-define('MPAY24_PAYMENT_ERROR_URL',   'mpay24_payment/error');
-define('MPAY24_PAYMENT_CONFIRM_URL', 'mpay24_payment/confirm');
-
-
 class Request {
     /**
      * Constructs a new generic Request.
@@ -96,8 +92,8 @@ class Request {
                     'TID'              => $this->payment->method_data['tid'],
                     'PRICE'            => $this->payment->totalAmount(false),
                     'CUSTOMER'         => $this->getCustomerName(),
-                    //'SUCCESS_URL'      => $this->getSuccessURL(),
-                    //'ERROR_URL'        => $this->getErrorURL(),
+                    'SUCCESS_URL'      => $this->getSuccessURL(),
+                    'ERROR_URL'        => $this->getErrorURL(),
                     'CONFIRMATION_URL' => $this->getConfirmationURL(),
                 )
             );
@@ -197,25 +193,24 @@ class Request {
     protected function buildURL($relative) {
         return url($relative, array(
                 'absolute' => true,
-                'https'    => !$this->getTestMode(),
+                'https'    => true,
             )
         );
     }
 
     protected function getSuccessURL() {
-        // TODO: Make it independent of the payment context. Maybe replace it with
+        // @todo: Make it independent of the payment context. Maybe replace it with
         // PaymentMethod:finish()
-        return $this->buildURL($this->payment->context_data['success_url']);
+        return $this->buildURL($this->payment->context_data['webform']['redirect_url']);
     }
 
     protected function getErrorURL() {
-      return $this->buildURL(MPAY24_PAYMENT_ERROR_URL . '/' . $this->payment->pid);
+      return $this->buildURL(MPAY24_PAYMENT_ERROR_URL);
     }
 
     protected function getConfirmationURL() {
-      return $this->buildURL('mpay24_payment/confirm');
+      return $this->buildURL(MPAY24_PAYMENT_CONFIRMATION_URL);
     }
-
 }
 
 

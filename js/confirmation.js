@@ -20,7 +20,7 @@ jQuery(document).ready(function() {
                         }, 1000);
                     }
                     else if (data.status === 'success') {
-                        window.location.replace(Drupal.settings.mpay24_payment.success_url);
+                        window.mpay24_payment.redirect(Drupal.settings.mpay24_payment.success_url);
                     } else {
                         window.mpay24_payment.error('server error');
                     }
@@ -33,7 +33,11 @@ jQuery(document).ready(function() {
 
         error: function(reason) {
             var s = Drupal.settings.mpay24_payment;
-            window.location.replace(s.error_url + s.pid);
+            window.mpay24_payment.redirect(s.error_url + s.pid);
+        },
+
+        redirect: function(uri) {
+            window.location.replace(uri)
         },
 
         init: function() {

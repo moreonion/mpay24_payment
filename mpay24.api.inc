@@ -2,10 +2,6 @@
 * @file
 * Provides a class to make communication with mpay24 services easier.
 *
-* @todo The Response class could be removed, because it handles stuff which belongs
-* in the payment context.
-*
-* @todo Request::$data should be replaced by $payment->method_data
 */
 
 define('MPAY24_PAYMENT_TEST_API_URL', 'https://test.mpay24.com/app/bin/etpv5');
@@ -19,6 +15,10 @@ class Request {
     function __construct(&$payment) {
         $this->payment = $payment;
         $this->data = array();
+        $this->payment_types = array(
+          'CB', 'CC', 'ELV', 'EPS', 'GIROPAY', 'HP', 'INVOICE', 'MAESTRO',
+          'MPASS', 'PAYPAL', 'PB', 'PSC', 'QUICK', 'SAFETYPAY');
+
 
         if($this->getTestMode()) {
             $this->api_url = MPAY24_PAYMENT_TEST_API_URL;
@@ -63,7 +63,7 @@ class Request {
 
     public static function onlineBanking(&$payment) {
         $obj = new Request($payment);
-        $obj->addData($data, $payment->method_data);
+        $obj->addData($payment->method_data);
         $obj->enabled_payment_types = array('EPS');
         $obj->prepare('SELECTPAYMENT');
 
@@ -77,12 +77,6 @@ class Request {
         ));
 
         if ($operation === 'SELECTPAYMENT') {
-            // SELECTPAYMENT excepts the amount in full euros, not cents. So we need
-            // to divide it by 100.
-            foreach ($this->payment->getLineItems() as $line_item) {
-                $line_item->amount = $line_item->amount / 100;
-            }
-
             $mdxi = $this->buildMDXI();
             $this->addData(array('MDXI' => $mdxi));
         } else {
@@ -90,7 +84,7 @@ class Request {
                 array(
                     'CURRENCY'         => 'EUR',
                     'TID'              => $this->payment->method_data['tid'],
-                    'PRICE'            => $this->payment->totalAmount(false),
+                    'PRICE'            => $this->payment->totalAmount(false) * 100, // in cent
                     'CUSTOMER'         => $this->getCustomerName(),
                     'SUCCESS_URL'      => $this->getSuccessURL(),
                     'ERROR_URL'        => $this->getErrorURL(),
@@ -130,8 +124,8 @@ class Request {
         }
 
         return '<?xml version="1.0" encoding="UTF-8"?>' .
-            '<Order>' .
-            '  <Tid>' . $this->payment->context_data['tid'] . '</Tid>' .
+            '<Order Style="margin: auto; max-width: 600px;">' .
+            '  <Tid>' . $this->payment->method_data['tid'] . '</Tid>' .
             '  <PaymentTypes Enable="false">' . $disabled_types . '</PaymentTypes>' .
             '  <ShoppingCart>' .
             '    <Description>' . $this->payment->description . '</Description>' .
@@ -214,25 +208,17 @@ class Request {
 }
 
 
-/*
 class Response {
     var $parsed_data = array();
 
     public function __construct($payment, $response) {
-        $this->payment  = $payment;
-        $this->response = $response;
+        $this->payment  = &$payment;
+        $this->response = &$response;
 
-        $payment->setStatus(new \PaymentStatusItem(PAYMENT_STATUS_FAILED));
-        $this->handle();
-        entity_save('payment', $this->payment);
-    }
-
-    public function handle() {
-      if(isset($this->response->code)
-        && $this->response->code === '200') {
-
-        parse_str(rtrim($this->response->data), $this->data);
-        $this->data = array_change_key_case($this->data);
+        if (isset($this->response->code)
+            && $this->response->code === '200') {
+          parse_str(rtrim($this->response->data), $this->data);
+          $this->data = array_change_key_case($this->data);
 
         if($this->data['status'] === 'OK') {
           $this->handleReturnCode();
@@ -244,14 +230,15 @@ class Response {
       }
     }
     function handleReturnCode() {
+      $this->payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_REDIRECT));
+      entity_save('payment', $this->payment);
+
       switch($this->data['returncode']) {
         case 'REDIRECT':
-          $this->payment->setStatus(
-            new \PaymentStatusItem(PAYMENT_STATUS_REDIRECT));
-          $this->payment->context_data['redirect_url'] = $this->data['location'];
+          $this->uri = $this->data['location'];
           break;
         case 'OK':
-          //$this->payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_RETURNED));
+          $this->uri = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $this->payment->pid;
           break;
         default:
           $this->handleAPIError();
@@ -280,7 +267,8 @@ class Response {
     }
 
     function handleError($message, $args = array(), $options = array()) {
-      throw new \Exception(t($message, $args, $options));
+      $this->payment->setStatus(new \PaymentStatusItem(PAYMENT_STATUS_FAILED));
+      entity_save('payment', $this->payment);
+      throw new \PaymentException(t($message, $args, $options));
     }
 }
-*/

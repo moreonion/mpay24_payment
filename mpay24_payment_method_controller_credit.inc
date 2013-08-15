@@ -1,4 +1,3 @@
-
 <?php
 
 module_load_include('inc', 'mpay24_payment', 'mpay24_payment_method_controller_common');
@@ -14,7 +13,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
   function __construct() {
     parent::__construct();
 
-    $this->title = t('mPay24');
+    $this->title = t('mPay24 Credit Card');
   }
 
 
@@ -32,12 +31,8 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
    * our server and set the payment status accordingly
    */
   function execute(Payment $payment) {
-    $payment->setStatus(new PaymentStatusItem(PAYMENT_MPAY24_STATUS_REDIRECT));
-    $response = \mpay24\Request::creditCard($payment);
-    //dpm($payment);
-    //dpm($response);
-    entity_save('payment', $payment);
-    drupal_goto('mpay24_payment/confirm/wait/' . (int) $payment->pid);
+    $response = new \mpay24\Response($payment, \mpay24\Request::creditCard($payment));
+    drupal_goto($response->uri);
   }
 }
 

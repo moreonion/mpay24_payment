@@ -41,7 +41,8 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
   public static function load($entities) {
     $pmids = array();
     foreach ($entities as $method) {
-      if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard')) {
+      if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard') ||
+          ($method->controller->name === 'PaymentMethodControllerMPay24OnlineBanking')) {
         $pmids[] = $method->pmid;
       }
     }
@@ -62,7 +63,8 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
    * Helper for entity_insert().
    */
   public static function insert($method) {
-    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard')) {
+    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard') ||
+        ($method->controller->name === 'PaymentMethodControllerMPay24OnlineBanking')) {
       $method->controller_data += $method->controller->controller_data_defaults;
 
       $query = db_insert('mpay24_payment_payment_method_controller');
@@ -78,7 +80,8 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
    * Helper for entity_update().
    */
   public static function update($method) {
-    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard')) {
+    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard') ||
+        ($method->controller->name === 'PaymentMethodControllerMPay24OnlineBanking')) {
       $query = db_update('mpay24_payment_payment_method_controller');
       $values = array_merge($method->controller_data, array(
                   'pmid' => $method->pmid,
@@ -92,10 +95,11 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
   /**
    * Helper for entity_delete().
    */
-  public static function delete($entity) {
-    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard')) {
+  public static function delete($method) {
+    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard') ||
+        ($method->controller->name === 'PaymentMethodControllerMPay24OnlineBanking')) {
       db_delete('mpay24_payment_payment_method_controller')
-        ->condition('pmid', $entity->pmid)
+        ->condition('pmid', $method->pmid)
         ->execute();
     }
   }

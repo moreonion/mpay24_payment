@@ -7,8 +7,6 @@
  *
  * @todo: Read Appendix A: Confirmation Interface in the spec for security
  *   recommendations
- * @todo: Use SSL for the Confirmation Interface.
- * @todo: Use unique token or user/pass for the Confirmation Interface.
  */
 
 function mpay24_payment_confirmation_interface_handler() {
@@ -79,6 +77,7 @@ function mpay24_payment_confirmation_interface_handler() {
     print 'OK: ';
     exit(0); // need to get unthemed output.
   } catch (PaymentException $e) {
+    watchdog('mpay24_payment', 'Exception: ' . $e->getMessage());
     drupal_add_http_header('Content-Type', 'text/plain');
     print 'ERROR: ' . $e->getMessage();
     exit(0); // need to get unthemed output.
@@ -149,7 +148,7 @@ function mpay24_payment_confirmation_status(Payment $payment) {
     case 'ERROR':
     case 'SUSPENDED':
     case 'TIMEOUT':
-      drupal_json_output(array('status' => 'error'));
+      drupal_json_output(array('status' => strtolower($result['status'])));
       break;
     case 'BILLED':
     case 'CREDITED':

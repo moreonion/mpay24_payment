@@ -1,6 +1,7 @@
 <?php
 
 module_load_include('inc', 'mpay24_payment', 'mpay24_payment_method_controller_credit');
+module_load_include('inc', 'mpay24_payment', 'mpay24_payment_method_controller_banking');
 
 define('PAYMENT_MPAY24_STATUS_REDIRECT', 'payment_mpay24_status_redirect');
 
@@ -79,7 +80,10 @@ function mpay24_payment_confirmation_access($arg) {
  * Implements hook_payment_method_controller_info().
  */
 function mpay24_payment_payment_method_controller_info() {
-  return array('PaymentMethodControllerMPay24CreditCard');
+  return array(
+    'PaymentMethodControllerMPay24CreditCard',
+    'PaymentMethodControllerMPay24OnlineBanking',
+  );
 }
 
 /**

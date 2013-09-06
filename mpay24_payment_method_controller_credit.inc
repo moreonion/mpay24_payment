@@ -9,6 +9,8 @@ module_load_include('inc', 'mpay24_payment', 'mpay24.api');
  */
 class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPay24 {
   public $payment_configuration_form_elements_callback = 'mpay24_payment_payment_configuration_form_elements';
+  protected $response = NULL;
+  protected $exception = NULL;
 
   function __construct() {
     parent::__construct();
@@ -21,6 +23,19 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
    * Implements PaymentMethodController::validate().
    */
   function validate(Payment $payment, PaymentMethod $payment_method, $strict) {
+    if (!$strict) {
+    	return;
+    }
+    if (!isset($this->response)) {
+      try {
+        $this->response = new \mpay24\Response($payment, \mpay24\Request::creditCard($payment));
+      } catch (PaymentException $e) {
+        $this->exception = $e;
+      }
+    }
+    if ($this->exception) {
+      throw $this->exception;
+    }
   }
 
 
@@ -31,8 +46,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
    * our server and set the payment status accordingly
    */
   function execute(Payment $payment) {
-    $response = new \mpay24\Response($payment, \mpay24\Request::creditCard($payment));
-    drupal_goto($response->uri);
+    drupal_goto($this->response->uri);
   }
 }
 
@@ -169,4 +183,20 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
     form_error($element['expiry_date'], t('The entered expiration date is wrong or the card is expired.'));
   }
 
+  if (form_get_errors())
+    return;
+
+  try {
+    $form_state['payment']->method->validate($form_state['payment'], TRUE);
+  } catch (\mpay24\PaymentMpay24ApiException $e) {
+    $code = $e->getErrorCode();
+    switch ($code) {
+      case 'IDENTIFIER_NOT_CORRECT':
+        form_error($element['credit_card_number'], t('Please enter a valid credit card number.'));
+        break;
+      case 'CVC_NOT_CORRECT':
+        form_error($element['secure_code'], t('Please enter the correct secure code.'));
+        break; 
+    }
+  }
 }

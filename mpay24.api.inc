@@ -7,6 +7,18 @@
 define('MPAY24_PAYMENT_TEST_API_URL', 'https://test.mpay24.com/app/bin/etpv5');
 define('MPAY24_PAYMENT_API_URL', 'https://mpay24.com/app/bin/etpv5');
 
+class PaymentMpay24ApiException extends \PaymentException {
+  protected $errorCode;
+  public function __construct($message, $code) {
+    parent::__construct($message);
+    $this->errorCode = $code;
+  }
+
+  public function getErrorCode() {
+    return $this->errorCode;
+  }
+}
+
 class Request {
     /**
      * Constructs a new generic Request.
@@ -246,29 +258,34 @@ class Response {
     }
 
     function handleAPIError() {
-      $this->handleError('@payment_method payment method encountered some error while contacting the mPay24 server. The code is "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid', array(
-          '@code'			=> $this->data['returncode'],
-          '@error'		=> isset($this->data['external_error'])
-          ? $this->data['external_error']: "",
-          '@pid'			=> $this->payment->pid,
-          '@pmid'			=> $this->payment->method->pmid,
-          '@payment_method'	=> $this->payment->method->title_generic,
-        ));
+      $this->payment->setStatus(new \PaymentStatusItem(PAYMENT_STATUS_FAILED));
+      entity_save('payment', $this->payment);
+      $message = t(
+        '@payment_method payment method encountered some error while contacting the mPay24 server. The code is "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid',
+	array(
+          '@code'            => $this->data['returncode'],
+          '@error'           => isset($this->data['external_error']) ? $this->data['external_error']: "",
+          '@pid'             => $this->payment->pid,
+          '@pmid'            => $this->payment->method->pmid,
+          '@payment_method'  => $this->payment->method->title_generic,
+        )
+      );
+      throw new PaymentMpay24ApiException($message, $this->data['returncode']);
     }
 
     function handleHTTPError() {
-      $this->handleError('@payment_method payment method encountered some HTTP error while trying to contact the mPay24 server. Error code "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid', array(
+      $this->payment->setStatus(new \PaymentStatusItem(PAYMENT_STATUS_FAILED));
+      entity_save('payment', $this->payment);
+      $message = t(
+        '@payment_method payment method encountered some HTTP error while trying to contact the mPay24 server. Error code "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid',
+	array(
           '@code'           => $this->response->code,
           '@error'          => $this->response->error,
           '@pid'            => $this->payment->pid,
           '@pmid'           => $this->payment->method->pmid,
           '@payment_method' => $this->payment->method->title_generic,
-        ));
-    }
-
-    function handleError($message, $args = array(), $options = array()) {
-      $this->payment->setStatus(new \PaymentStatusItem(PAYMENT_STATUS_FAILED));
-      entity_save('payment', $this->payment);
-      throw new \PaymentException(t($message, $args, $options));
+	)
+      );
+      throw new \PaymentException($message);
     }
 }

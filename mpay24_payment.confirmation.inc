@@ -113,8 +113,8 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
         'pid' => $payment->pid,
         'timeout' => empty($payment->method->controller_data['timeout']) ? 30 : $payment->method->controller_data['request_timeout'],
         'success_url' => $success_url,
-        'error_url'   => url(MPAY24_PAYMENT_ERROR_URL . $payment->pid, $url_options),
-        'status_url' => url(MPAY24_PAYMENT_CONFIRMATION_STATUS_URL . $payment->pid, $url_options),
+        'error_url'   => url(MPAY24_PAYMENT_ERROR_URL, $url_options),
+        'status_url' => url(MPAY24_PAYMENT_CONFIRMATION_STATUS_URL, $url_options),
       ),
     ), 'setting');
 

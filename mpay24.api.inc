@@ -204,17 +204,17 @@ class Request {
         );
     }
 
-    protected function getSuccessURL() {
+    public function getSuccessURL() {
         // @todo: Make it independent of the payment context. Maybe replace it with
         // PaymentMethod:finish()
         return $this->buildURL($this->payment->context_data['webform']['redirect_url']);
     }
 
-    protected function getErrorURL() {
+    public function getErrorURL() {
       return $this->buildURL(MPAY24_PAYMENT_ERROR_URL . $this->payment->pid);
     }
 
-    protected function getConfirmationURL() {
+    public function getConfirmationURL() {
       return $this->buildURL(MPAY24_PAYMENT_CONFIRMATION_URL . $this->payment->pid);
     }
 }

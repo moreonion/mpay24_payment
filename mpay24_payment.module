@@ -1,8 +1,5 @@
 <?php
 
-module_load_include('inc', 'mpay24_payment', 'mpay24_payment_method_controller_credit');
-module_load_include('inc', 'mpay24_payment', 'mpay24_payment_method_controller_banking');
-
 define('PAYMENT_MPAY24_STATUS_REDIRECT', 'payment_mpay24_status_redirect');
 
 define('MPAY24_PAYMENT_CONFIRMATION_URL', 'mpay24_payment/confirm/handle/');

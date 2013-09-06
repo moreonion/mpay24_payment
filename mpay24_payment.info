@@ -4,3 +4,6 @@ core = 7.x
 dependencies[] = payment
 package = Payment
 files[] = mpay24_payment.module
+files[] = mpay24_payment_method_controller_banking.inc
+files[] = mpay24_payment_method_controller_credit.inc
+

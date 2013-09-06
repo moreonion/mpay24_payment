@@ -199,17 +199,17 @@ class Request {
     }
 
     protected function getErrorURL() {
-      return $this->buildURL(MPAY24_PAYMENT_ERROR_URL);
+      return $this->buildURL(MPAY24_PAYMENT_ERROR_URL . $this->payment->pid);
     }
 
     protected function getConfirmationURL() {
-      return $this->buildURL(MPAY24_PAYMENT_CONFIRMATION_URL);
+      return $this->buildURL(MPAY24_PAYMENT_CONFIRMATION_URL . $this->payment->pid);
     }
 }
 
 
 class Response {
-    var $parsed_data = array();
+    public $parsed_data = array();
 
     public function __construct($payment, $response) {
         $this->payment  = &$payment;

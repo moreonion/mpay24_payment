@@ -150,19 +150,22 @@ function mpay24_payment_entity_load(array $entities, $entity_type) {
  * Implements hook_ENTITY_TYPE_ACTION().
  */
 function mpay24_payment_payment_method_insert(PaymentMethod $method) {
-  PaymentMethodControllerMPay24::insert($method);
+  if ($method->controller instanceof PaymentMethodControllerMpay24)
+    $method->controller->insert();
 }
 
 /**
  * Implements hook_ENTITY_TYPE_ACTION().
  */
 function mpay24_payment_payment_method_update(PaymentMethod $method) {
-  PaymentMethodControllerMPay24::update($method);
+  if ($method->controller instanceof PaymentMethodControllerMpay24)
+    $method->controller->update();
 }
 
 /**
  * Implements hook_ENTITY_TYPE_ACTION().
  */
-function mpay24_payment_payment_method_delete($entity) {
-  PaymentMethodControllerMPay24::delete($entity);
+function mpay24_payment_payment_method_delete($method) {
+  if ($method->controller instanceof PaymentMethodControllerMpay24)
+    $method->controller->delete();
 }

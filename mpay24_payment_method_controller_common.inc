@@ -41,8 +41,7 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
   public static function load($entities) {
     $pmids = array();
     foreach ($entities as $method) {
-      if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard') ||
-          ($method->controller->name === 'PaymentMethodControllerMPay24OnlineBanking')) {
+      if ($method->controller instanceof PaymentMethodMpay24Controller) {
         $pmids[] = $method->pmid;
       }
     }
@@ -53,8 +52,8 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
       $result = $query->execute();
       while ($data = $result->fetchAssoc()) {
         $method = $entities[$data['pmid']];
+        unset($data['pmid']);
         $method->controller_data = (array) $data;
-        unset($method->controller_data['pmid']);
       }
     }
   }
@@ -62,45 +61,32 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
   /**
    * Helper for entity_insert().
    */
-  public static function insert($method) {
-    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard') ||
-        ($method->controller->name === 'PaymentMethodControllerMPay24OnlineBanking')) {
-      $method->controller_data += $method->controller->controller_data_defaults;
+  public function insert($method) {
+    $method->controller_data += $this->controller_data_defaults;
 
-      $query = db_insert('mpay24_payment_payment_method_controller');
-      $values = array_merge($method->controller_data, array(
-                  'pmid' => $method->pmid,
-                ));
-      $query->fields($values);
-      $query->execute();
-    }
+    $query = db_insert('mpay24_payment_payment_method_controller');
+    $values = array_merge($method->controller_data, array('pmid' => $method->pmid));
+    $query->fields($values);
+    $query->execute();
   }
 
   /**
    * Helper for entity_update().
    */
-  public static function update($method) {
-    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard') ||
-        ($method->controller->name === 'PaymentMethodControllerMPay24OnlineBanking')) {
-      $query = db_update('mpay24_payment_payment_method_controller');
-      $values = array_merge($method->controller_data, array(
-                  'pmid' => $method->pmid,
-                ));
-      $query->fields($values);
-      $query->condition('pmid', $method->pmid);
-      $query->execute();
-    }
+  public function update($method) {
+    $query = db_update('mpay24_payment_payment_method_controller');
+    $values = array_merge($method->controller_data, array('pmid' => $method->pmid));
+    $query->fields($values);
+    $query->condition('pmid', $method->pmid);
+    $query->execute();
   }
 
   /**
    * Helper for entity_delete().
    */
-  public static function delete($method) {
-    if (($method->controller->name === 'PaymentMethodControllerMPay24CreditCard') ||
-        ($method->controller->name === 'PaymentMethodControllerMPay24OnlineBanking')) {
-      db_delete('mpay24_payment_payment_method_controller')
-        ->condition('pmid', $method->pmid)
-        ->execute();
-    }
+  public function delete($method) {
+    db_delete('mpay24_payment_payment_method_controller')
+      ->condition('pmid', $method->pmid)
+      ->execute();
   }
 }

@@ -41,7 +41,7 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
   public static function load($entities) {
     $pmids = array();
     foreach ($entities as $method) {
-      if ($method->controller instanceof PaymentMethodMpay24Controller) {
+      if ($method->controller instanceof PaymentMethodControllerMPay24) {
         $pmids[] = $method->pmid;
       }
     }
@@ -54,6 +54,7 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
         $method = $entities[$data['pmid']];
         unset($data['pmid']);
         $method->controller_data = (array) $data;
+        $method->controller_data += $method->controller->controller_data_defaults;
       }
     }
   }

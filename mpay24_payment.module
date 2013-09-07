@@ -148,7 +148,7 @@ function mpay24_payment_entity_load(array $entities, $entity_type) {
  */
 function mpay24_payment_payment_method_insert(PaymentMethod $method) {
   if ($method->controller instanceof PaymentMethodControllerMpay24)
-    $method->controller->insert();
+    $method->controller->insert($method);
 }
 
 /**
@@ -156,7 +156,7 @@ function mpay24_payment_payment_method_insert(PaymentMethod $method) {
  */
 function mpay24_payment_payment_method_update(PaymentMethod $method) {
   if ($method->controller instanceof PaymentMethodControllerMpay24)
-    $method->controller->update();
+    $method->controller->update($method);
 }
 
 /**
@@ -164,5 +164,5 @@ function mpay24_payment_payment_method_update(PaymentMethod $method) {
  */
 function mpay24_payment_payment_method_delete($method) {
   if ($method->controller instanceof PaymentMethodControllerMpay24)
-    $method->controller->delete();
+    $method->controller->delete($method);
 }

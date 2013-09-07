@@ -80,6 +80,7 @@ function mpay24_payment_payment_method_controller_info() {
   return array(
     'PaymentMethodControllerMPay24CreditCard',
     'PaymentMethodControllerMPay24OnlineBanking',
+    'PaymentMethodControllerMPay24Dummy',
   );
 }
 

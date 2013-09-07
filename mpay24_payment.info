@@ -6,4 +6,5 @@ package = Payment
 files[] = mpay24_payment.module
 files[] = mpay24_payment_method_controller_banking.inc
 files[] = mpay24_payment_method_controller_credit.inc
+files[] = mpay24_payment_method_controller_dummy.inc
 

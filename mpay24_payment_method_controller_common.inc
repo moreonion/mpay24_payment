@@ -90,4 +90,10 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
       ->condition('pmid', $method->pmid)
       ->execute();
   }
+  
+  /**
+   * Allows the controller to act when the payment status is polled.
+   */
+  public function pollStatus(Payment $payment) {
+  }
 }

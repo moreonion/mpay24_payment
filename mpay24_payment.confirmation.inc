@@ -146,12 +146,14 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
 function mpay24_payment_confirmation_status(Payment $payment) {
   $status = $payment->getStatus();
   $timeout = $payment->method->controller_data['request_timeout'];
+  
+  $payment->method->controller->pollStatus($payment);
   if (($status->created + $timeout) < time()) {
-    $status = new PaymentStatusItem(PAYMENT_STATUS_EXPIRED, time(), $payment->pid);
-    $payment->setStatus($status);
+    $payment->setStatus(new PaymentStatusItem(PAYMENT_STATUS_EXPIRED, time(), $payment->pid));
+    entity_save('payment', $payment);
   }
-  dpm($payment);
-
+  $status = $payment->getStatus();
+  
   switch ($status->status) {
     case PAYMENT_STATUS_FAILED:
       drupal_json_output(array('status' => 'error'));

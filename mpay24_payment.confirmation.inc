@@ -28,9 +28,6 @@ function mpay24_payment_confirmation_interface_handler() {
         'Can\'t find matching payment object for this transaction ID.');
     }
 
-    $payments = entity_load('payment', array($pid));
-    $payment = array_shift($payments);
-
     $request = array();
     $transaction_parameters = array(
       'OPERATION', 'STATUS', 'TID', 'PRICE', 'CURRENCY', 'MPAYTID');
@@ -51,14 +48,32 @@ function mpay24_payment_confirmation_interface_handler() {
       else { $request[$transaction_parameter] = NULL; }
     }
 
-    db_insert('mpay24_payment_confirmation_interface')
-      ->fields(array(
-          'tid'       => $request['TID'],
-          'status'    => $request['STATUS'],
-          'mpaytid'   => $request['MPAYTID'],
-          'timestamp' => REQUEST_TIME,
-        )
-      )->execute();
+    $payments = entity_load('payment', array($pid));
+    $payment = &$payments[$pid];
+    
+    $new_status = PAYMENT_STATUS_UNKNOWN;
+    switch ($request['STATUS']) {
+      case 'ERROR':
+        $status = PAYMENT_STATUS_FAILED;
+        break;
+      case 'SUSPENDED':
+      case 'TIMEOUT':
+        $status = PAYMENT_STATUS_EXPIRED;
+        break;
+      case 'BILLED':
+      case 'CREDITED':
+        $status = PAYMENT_STATUS_SUCCESS;
+        break;
+      default:
+    }
+    if ($request['MPAYTID']) {
+      db_update('mpay24_payment_tids')
+        ->fields(array('mpaytid' => (int) $request['MPAYTID']))
+        ->condition('pmid', $payment->pid)
+        ->execute();
+    }
+    $payment->setStatus(new PaymentStatusItem($status, REQUEST_TIME, $payment->pid));
+
     watchdog(
       'mpay24_payment',
       "Confirmation Interface: OPERATION: \"@o\", STATUS: \"@s\", TID: \"@t\", PRICE: \"@p\", CURRENCY: \"@c\", MPAYTID: \"@m\"",
@@ -129,29 +144,22 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
 }
 
 function mpay24_payment_confirmation_status(Payment $payment) {
-  $query = db_select('mpay24_payment_confirmation_interface', 's')
-    ->fields('s', array('status', 'timestamp'));
-  $query->join('mpay24_payment_tids', 't', 's.tid = t.tid');
-  $query->condition('t.pid', $payment->pid);
-  $result = $query
-    ->orderBy('id', 'DESC')
-    ->range(0, 1)
-    ->execute()
-    ->fetchAssoc();
-
+  $status = $payment->getStatus();
   $timeout = $payment->method->controller_data['request_timeout'];
-  if (($result['timestamp'] + $timeout) < time()) {
-    $result['status'] = 'TIMEOUT';
+  if (($status->created + $timeout) < time()) {
+    $status = new PaymentStatusItem(PAYMENT_STATUS_EXPIRED, time(), $payment->pid);
+    $payment->setStatus($status);
   }
+  dpm($payment);
 
-  switch ($result['status']) {
-    case 'ERROR':
-    case 'SUSPENDED':
-    case 'TIMEOUT':
-      drupal_json_output(array('status' => strtolower($result['status'])));
+  switch ($status->status) {
+    case PAYMENT_STATUS_FAILED:
+      drupal_json_output(array('status' => 'error'));
       break;
-    case 'BILLED':
-    case 'CREDITED':
+    case PAYMENT_STATUS_EXPIRED:
+      drupal_json_output(array('status' => 'timeout'));
+      break;
+    case PAYMENT_STATUS_SUCCESS:
       drupal_json_output(array('status' => 'success'));
       break;
     default:

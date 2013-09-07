@@ -43,44 +43,6 @@ function mpay24_payment_schema() {
     ),
   );
 
-  $schema['mpay24_payment_confirmation_interface'] = array(
-    'fields' => array(
-      'id' => array(
-        'type' => 'serial',
-      ),
-      'tid' => array(
-        'description' => 'Merchant\'s transaction ID for mpay24.',
-        'type'        => 'varchar',
-        'length'      => 33,
-        'not null'    => TRUE,
-      ),
-      'status' => array(
-        'description' => 'mpay24 confirmation interface request status.',
-        'type'        => 'varchar',
-        'length'      => 11,
-        'not null'    => TRUE,
-      ),
-      'mpaytid' => array(
-        'description' => 'Transaction ID assigned by mpay24',
-        'type'        => 'int',
-        'not null'    => TRUE,
-      ),
-      'timestamp' => array(
-        'description' => 'Timestamp when the confirmation interface received the request.',
-        'type'        => 'int',
-        'not null'    => TRUE,
-        'unsigned'    => TRUE,
-      ),
-    ),
-    'primary key' => array('id'),
-    'foreign keys' => array(
-      'mpay24_payment' => array(
-        'table'   => 'mpay24_payment_tids',
-        'columns' => array('tid' => 'tid'),
-      ),
-    ),
-  );
-
   $schema['mpay24_payment_tids'] = array(
     'fields' => array(
       'pid' => array(
@@ -94,6 +56,11 @@ function mpay24_payment_schema() {
         'length'      => 33,
         'not null'    => TRUE,
         'unique'      => TRUE,
+      ),
+      'mpaytid' => array(
+        'description' => 'Transaction ID assigned by mpay24',
+        'type'        => 'int',
+        'not null'    => TRUE,
       ),
     ),
     'foreign keys' => array(
@@ -110,6 +77,26 @@ function mpay24_payment_schema() {
 
 
   return $schema;
+}
+
+function mpay24_payment_update_1() {
+  db_add_field('mpay24_payment_tids', 'mpaytid', array(
+    'description' => 'Transaction ID assigned by mpay24',
+    'type'        => 'int',
+    'not null'    => TRUE,
+  ));
+  $sql = <<<SQL
+UPDATE {mpay24_payment_tids} t
+INNER JOIN (
+  SELECT tid, MAX(mpaytid) AS mpaytid
+  FROM {mpay24_payment_confirmation_interface}
+  WHERE mpaytid IS NOT NULL
+  GROUP BY tid
+) c ON t.tid = c.tid
+SET t.mpaytid = c.mpaytid;
+SQL;
+  db_query($sql);
+  drop_table('mpay24_payment_confirmation_interface');
 }
 
 /**

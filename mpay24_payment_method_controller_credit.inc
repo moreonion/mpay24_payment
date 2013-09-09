@@ -179,8 +179,18 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
   }
 
   # validate expiry date
-  if ($credit_card_validator->isValidToDate($expiry_date) == FALSE) {
+  if (($date_object = $credit_card_validator->isValidToDate($expiry_date)) == FALSE) {
     form_error($element['expiry_date'], t('The entered expiration date is wrong or the card is expired.'));
+  } else {
+    # only these two formats could have passed validation
+    # save a date object for further use in request to mPay24 API
+    if(strlen($method_data['expiry_date']) == 4) {
+      $form_state['payment']->method_data['expiry_date'] = date_create_from_format("my", $method_data['expiry_date']);
+    } elseif (strlen($method_data['expiry_date']) == 5) {
+      $form_state['payment']->method_data['expiry_date'] = date_create_from_format("m/y", $method_data['expiry_date']);
+    } else {
+      $form_state['payment']->method_data['expiry_date'] = date_create();
+    }
   }
 
   if (form_get_errors())

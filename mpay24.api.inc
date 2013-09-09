@@ -56,16 +56,19 @@ class Request {
         $obj = new Request($payment);
         $method_data = &$payment->method_data;
 
-        // MPay24 expects YYMM instead of MMYY as the dates format.
-        $expiry_date = date_create_from_format("my", $method_data['expiry_date']);
-        $method_data['expiry_date'] = $expiry_date->format("ym");
+        # a guard to prevent the later ->format() to fail
+        if (get_class($method_data['expiry_date']) == "DateTime") {
+          $expiry_date = $method_data['expiry_date'];
+        } else {
+          $expiry_date = date_create();
+        }
 
         $obj->prepare('ACCEPTPAYMENT');
         $obj->addData(array(
             'P_TYPE'     => 'CC',
             'BRAND'      => $method_data['issuer'],
             'IDENTIFIER' => $method_data['credit_card_number'],
-            'EXPIRY'     => $method_data['expiry_date'],
+            'EXPIRY'     => $expiry_date->format('ym'),
             'CVC'        => $method_data['secure_code'],
             'AUTH_3DS'   => isset($method_data['auth_3ds']) ? $method_data['auth_3ds'] : 'N',
         ));

@@ -16,7 +16,7 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
     if (!$strict)
       return;
     
-    sleep($payment->method_data['validate_timeout']);
+    sleep($payment->context_data['method_data']['validate_timeout']);
   }
   
   /**

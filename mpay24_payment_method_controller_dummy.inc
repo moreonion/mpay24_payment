@@ -32,14 +32,14 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
         exit;
       case 'poll':
         $payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_REDIRECT));
-        $this->form_state['redirect'] = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $payment->pid;
+        $payment->form_state['redirect'] = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $payment->pid;
         break;
       case 'error_page':
-        $this->form_state['redirect'] = $request->getErrorURL();
+        $payment->form_state['redirect'] = $request->getErrorURL();
         break;
       case 'success_page':
       default:
-        $this->form_state['redirect'] = $request->getSuccessURL();
+        $payment->form_state['redirect'] = $request->getSuccessURL();
     }
   }
   
@@ -112,6 +112,7 @@ function mpay24_payment_dummy_form_elements_validate(array $element, array &$for
     $values =& $values[$key];
   }
   $form_state['payment']->context_data['method_data'] = $values;
+  $form_state['payment']->form_state = &$form_state;
 }
 
 /**
@@ -140,5 +141,4 @@ function mpay24_payment_dummy_configuration_form_elements(array $form, array &$f
 function mpay24_payment_dummy_configuration_form_elements_validate(array $element, array &$form_state) {
   $values = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
   $form_state['payment_method']->controller_data['request_timeout'] = $values['request_timeout'];
-  $form_state['payment_method']->form_state = &$form_state;
 }

@@ -45,7 +45,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
    * our server and set the payment status accordingly
    */
   function execute(Payment $payment) {
-    $this->form_state['redirect'] = $this->response->uri;
+    $payment->form_state['redirect'] = $this->response->uri;
   }
 }
 

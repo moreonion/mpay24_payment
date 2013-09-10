@@ -186,10 +186,10 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
   } else {
     # only these two formats could have passed validation
     # save a date object for further use in request to mPay24 API
-    if(strlen($method_data['expiry_date']) == 4) {
-      $form_state['payment']->method_data['expiry_date'] = date_create_from_format("my", $method_data['expiry_date']);
-    } elseif (strlen($method_data['expiry_date']) == 5) {
-      $form_state['payment']->method_data['expiry_date'] = date_create_from_format("m/y", $method_data['expiry_date']);
+    if(strlen($expiry_date) == 4) {
+      $form_state['payment']->method_data['expiry_date'] = date_create_from_format("my", $expiry_date);
+    } elseif (strlen($expiry_date == 5)) {
+      $form_state['payment']->method_data['expiry_date'] = date_create_from_format("m/y", $expiry_date);
     } else {
       $form_state['payment']->method_data['expiry_date'] = date_create();
     }

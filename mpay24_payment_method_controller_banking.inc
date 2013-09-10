@@ -1,6 +1,5 @@
 <?php
 
-module_load_include('inc', 'mpay24_payment', 'mpay24_payment_method_controller_common');
 module_load_include('inc', 'mpay24_payment', 'mpay24.api');
 
 /**

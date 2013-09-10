@@ -32,15 +32,14 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
         exit;
       case 'poll':
         $payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_REDIRECT));
-        entity_save('payment', $payment);
-        drupal_goto(MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $payment->pid);
+        $this->form_state['redirect'] = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $payment->pid;
         break;
       case 'error_page':
-        drupal_goto($request->getErrorURL());
+        $this->form_state['redirect'] = $request->getErrorURL();
         break;
       case 'success_page':
       default:
-        drupal_goto($request->getSuccessURL());
+        $this->form_state['redirect'] = $request->getSuccessURL();
     }
   }
   
@@ -141,4 +140,5 @@ function mpay24_payment_dummy_configuration_form_elements(array $form, array &$f
 function mpay24_payment_dummy_configuration_form_elements_validate(array $element, array &$form_state) {
   $values = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
   $form_state['payment_method']->controller_data['request_timeout'] = $values['request_timeout'];
+  $form_state['payment_method']->form_state = &$form_state;
 }

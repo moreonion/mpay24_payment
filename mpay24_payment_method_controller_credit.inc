@@ -46,7 +46,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
    * our server and set the payment status accordingly
    */
   function execute(Payment $payment) {
-    drupal_goto($this->response->uri);
+    $this->form_state['redirect'] = $this->response->uri;
   }
 }
 
@@ -209,4 +209,5 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
         break; 
     }
   }
+  $form_state['payment']->form_state = &$form_state;
 }

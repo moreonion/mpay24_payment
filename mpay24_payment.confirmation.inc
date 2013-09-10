@@ -67,10 +67,7 @@ function mpay24_payment_confirmation_interface_handler() {
       default:
     }
     if ($request['MPAYTID']) {
-      db_update('mpay24_payment_tids')
-        ->fields(array('mpaytid' => (int) $request['MPAYTID']))
-        ->condition('pmid', $payment->pid)
-        ->execute();
+      $payment->mpaytid = (int) $request['MPAYTID'];
     }
     $payment->setStatus(new PaymentStatusItem($status, REQUEST_TIME, $payment->pid));
 

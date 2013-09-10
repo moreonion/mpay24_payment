@@ -38,18 +38,10 @@ class Request {
             $this->api_url = MPAY24_PAYMENT_API_URL;
         }
 
-        $this->payment->method_data['tid'] = $this->generateTID(time());
+        $this->payment->tid = $this->generateTID(time());
 
         // we need a valid pid for the next step.
         entity_save('payment', $payment);
-        // we use an extra table, because we can't query for method_data
-        // attributes without loading all payment entities.
-        db_insert('mpay24_payment_tids')
-          ->fields(array(
-              'pid' => $this->payment->pid,
-              'tid' => $this->payment->method_data['tid'],
-            ))
-          ->execute();
     }
 
     public static function creditCard(&$payment) {
@@ -98,7 +90,7 @@ class Request {
             $this->addData(
                 array(
                     'CURRENCY'         => 'EUR',
-                    'TID'              => $this->payment->method_data['tid'],
+                    'TID'              => $this->payment->tid,
                     'PRICE'            => $this->payment->totalAmount(false) * 100, // in cent
                     'CUSTOMER'         => $this->getCustomerName(),
                     'SUCCESS_URL'      => $this->getSuccessURL(),
@@ -140,7 +132,7 @@ class Request {
 
         return '<?xml version="1.0" encoding="UTF-8"?>' .
             '<Order Style="margin: auto; max-width: 600px;">' .
-            '  <Tid>' . $this->payment->method_data['tid'] . '</Tid>' .
+            '  <Tid>' . $this->payment->tid . '</Tid>' .
             '  <PaymentTypes Enable="false">' . $disabled_types . '</PaymentTypes>' .
             '  <ShoppingCart>' .
             '    <Description>' . $this->payment->description . '</Description>' .

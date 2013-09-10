@@ -141,7 +141,46 @@ function mpay24_payment_payment_method_configuration_form_elements_validate(arra
 function mpay24_payment_entity_load(array $entities, $entity_type) {
   if ($entity_type == 'payment_method') {
     PaymentMethodControllerMPay24::load($entities);
+  } elseif ($entity_type == 'payment') {
+    $query = db_select('mpay24_payment_tids', 't')
+      ->fields('t')
+      ->condition('pid', array_keys($entities));
+    $result = $query->execute();
+    while ($data = $result->fetchAssoc()) {
+      $payment = $entities[$data['pid']];
+      $payment->tid     = $data['tid'];
+      $payment->mpaytid = $data['mpaytid'];
+    }
   }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_ACTION().
+ */
+function mpay24_payment_payment_insert(Payment $payment) {
+  if (isset($payment->tid) || isset($payment->mpaytid)) {
+    db_insert('mpay24_payment_tids')
+     ->fields(array(
+       'pid' => $payment->pid,
+       'tid' => isset($payment->tid) ? $payment->tid : '',
+       'mpaytid' => isset($payment->mpaytid) ? $payment->mpaytid : NULL,
+      ))
+     ->execute();
+  }
+}
+function mpay24_payment_payment_update(Payment $payment) {
+  if (isset($payment->tid) || isset($payment->mpaytid)) {
+    db_update('mpay24_payment_tids')
+     ->fields(array(
+       'tid' => isset($payment->tid) ? $payment->tid : '',
+       'mpaytid' => isset($payment->mpaytid) ? $payment->mpaytid : NULL,
+      ))
+     ->condition('pid', $payment->pid)
+     ->execute();
+  }
+}
+function mpay24_payment_payment_delete(Payment $payment) {
+  db_delete('mpay24_payment_tids')->condition('pid', $payment->pid)->execute();
 }
 
 /**

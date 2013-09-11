@@ -36,9 +36,6 @@ function mpay24_payment_confirmation_interface_handler($payment) {
       else { $request[$transaction_parameter] = NULL; }
     }
 
-    $payments = entity_load('payment', array($pid));
-    $payment = &$payments[$pid];
-    
     $new_status = PAYMENT_STATUS_UNKNOWN;
     switch ($request['STATUS']) {
       case 'ERROR':

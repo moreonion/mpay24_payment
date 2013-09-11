@@ -9,23 +9,11 @@
  *   recommendations
  */
 
-function mpay24_payment_confirmation_interface_handler() {
+function mpay24_payment_confirmation_interface_handler($payment) {
   try {
-    if (isset($_GET['TID']) == FALSE) {
+    if (!isset($_GET['TID']) || $payment->tid != $_GET['TID']) {
       throw new PaymentException(
         'Can\'t handle confirmation request without a valid transaction ID.');
-    }
-
-    $pid = db_select('mpay24_payment_tids', 't')
-      ->fields('t', array('pid'))
-      ->condition('t.tid', $_GET['TID'])
-      ->range(0,1)
-      ->execute()
-      ->fetchField();
-
-    if ($pid === false) {
-      throw new PaymentException(
-        'Can\'t find matching payment object for this transaction ID.');
     }
 
     $request = array();

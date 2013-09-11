@@ -36,7 +36,7 @@ function mpay24_payment_confirmation_interface_handler($payment) {
       else { $request[$transaction_parameter] = NULL; }
     }
 
-    $new_status = PAYMENT_STATUS_UNKNOWN;
+    $status = PAYMENT_STATUS_UNKNOWN;
     switch ($request['STATUS']) {
       case 'ERROR':
         $status = PAYMENT_STATUS_FAILED;
@@ -46,6 +46,7 @@ function mpay24_payment_confirmation_interface_handler($payment) {
         $status = PAYMENT_STATUS_EXPIRED;
         break;
       case 'BILLED':
+      case 'RESERVED':
       case 'CREDITED':
         $status = PAYMENT_STATUS_SUCCESS;
         break;

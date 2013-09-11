@@ -56,6 +56,7 @@ function mpay24_payment_confirmation_interface_handler($payment) {
       $payment->mpaytid = (int) $request['MPAYTID'];
     }
     $payment->setStatus(new PaymentStatusItem($status, REQUEST_TIME, $payment->pid));
+    entity_save('payment', $payment);
 
     watchdog(
       'mpay24_payment',

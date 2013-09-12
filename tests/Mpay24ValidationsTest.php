@@ -2,6 +2,11 @@
 
 class Mpay24ValidationsTest extends \DrupalUnitTestCase {
 
+  public function setUp() {
+    parent::setUp();
+
+    drupal_static_reset('form_set_error');
+  }
   // helper methods
 
   function paymentInstance() {
@@ -50,6 +55,12 @@ class Mpay24ValidationsTest extends \DrupalUnitTestCase {
       ),
       'credit_card_number' => array(
         '#parents' => array('submitted', 'PaymentMethodControllerMPay24CreditCard', 'credit_card_number'),
+      ),
+      'secure_code' => array(
+        '#parents' => array('submitted', 'PaymentMethodControllerMPay24CreditCard', 'secure_code'),
+      ),
+      'expiry_date' => array(
+        '#parents' => array('submitted', 'PaymentMethodControllerMPay24CreditCard', 'expiry_date'),
       ),
     );
 
@@ -106,5 +117,39 @@ class Mpay24ValidationsTest extends \DrupalUnitTestCase {
     // assertion: form_errors in credit_card_number
     $this->assertGreaterThan(0, count($form));
     $this->assertEquals(implode('][', $element['credit_card_number']['#parents']), array_shift(array_keys($form)));
+  }
+
+  function testInvalidCreditCardNumber() {
+    // get a valid form_state
+    $element = $this->validElement();
+    $form_state = $this->validFormState();
+
+    // invalidate
+    $form_state['values']['submitted']['PaymentMethodControllerMPay24CreditCard']['credit_card_number'] = '444333222111';
+
+    mpay24_payment_payment_configuration_form_elements_validate($element, $form_state);
+
+    $form = &drupal_static('form_set_error', array());
+
+    // assertion: form_errors in credit_card_number
+    $this->assertGreaterThan(0, count($form));
+    $this->assertEquals(implode('][', $element['credit_card_number']['#parents']), array_shift(array_keys($form)));
+  }
+
+  function testInvalidExpiryDate() {
+    // get a valid form_state
+    $element = $this->validElement();
+    $form_state = $this->validFormState();
+
+    // invalidate
+    $form_state['values']['submitted']['PaymentMethodControllerMPay24CreditCard']['expiry_date'] = '05/13';
+
+    mpay24_payment_payment_configuration_form_elements_validate($element, $form_state);
+
+    $form = &drupal_static('form_set_error', array());
+
+    // assertion: form_errors in credit_card_number
+    $this->assertGreaterThan(0, count($form));
+    $this->assertEquals(implode('][', $element['expiry_date']['#parents']), array_shift(array_keys($form)));
   }
 }

@@ -94,7 +94,7 @@ class Mpay24ValidationsTest extends \DrupalUnitTestCase {
     $element = $this->validElement();
     $form_state = $this->validFormState();
 
-    mpay24_payment_payment_configuration_form_elements_validate($element, $form_state);
+    _mpay24_payment_validate_form_elements($element, $form_state);
 
     $form = &drupal_static('form_set_error', array());
 
@@ -110,7 +110,7 @@ class Mpay24ValidationsTest extends \DrupalUnitTestCase {
     // invalidate issuer
     $form_state['values']['submitted']['PaymentMethodControllerMPay24CreditCard']['issuer'] = '2';
 
-    mpay24_payment_payment_configuration_form_elements_validate($element, $form_state);
+    _mpay24_payment_validate_form_elements($element, $form_state);
 
     $form = &drupal_static('form_set_error', array());
 
@@ -127,7 +127,7 @@ class Mpay24ValidationsTest extends \DrupalUnitTestCase {
     // invalidate
     $form_state['values']['submitted']['PaymentMethodControllerMPay24CreditCard']['credit_card_number'] = '444333222111';
 
-    mpay24_payment_payment_configuration_form_elements_validate($element, $form_state);
+    _mpay24_payment_validate_form_elements($element, $form_state);
 
     $form = &drupal_static('form_set_error', array());
 
@@ -144,7 +144,7 @@ class Mpay24ValidationsTest extends \DrupalUnitTestCase {
     // invalidate
     $form_state['values']['submitted']['PaymentMethodControllerMPay24CreditCard']['expiry_date'] = '05/13';
 
-    mpay24_payment_payment_configuration_form_elements_validate($element, $form_state);
+    _mpay24_payment_validate_form_elements($element, $form_state);
 
     $form = &drupal_static('form_set_error', array());
 

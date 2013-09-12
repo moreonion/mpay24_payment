@@ -112,6 +112,19 @@ function mpay24_payment_payment_configuration_form_elements(array $element, arra
  * mpay24_payment_payment_configuration_form_elements
  */
 function mpay24_payment_payment_configuration_form_elements_validate(array $element, array &$form_state) {
+  _mpay24_payment_validate_form_elements($element, $form_state);
+
+  if (form_get_errors()) {
+    return;
+  } else {
+    _mpay24_payment_validate_online_via_mpay24($element, $form_state);
+  }
+
+  // needed for later execute()
+  $form_state['payment']->form_state = &$form_state;
+}
+
+function _mpay24_payment_validate_form_elements(array $element, array &$form_state) {
   $values = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
 
   # validate presence of all fields:
@@ -152,8 +165,7 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
         '%card'   => $credit_card_number,
         '%issuer' => $element['issuer']['#options'][$issuer],
       )
-    )
-  );
+    ));
   }
 
   # validate secure code (CVC)
@@ -192,9 +204,9 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
     }
   }
 
-  if (form_get_errors())
-    return;
+}
 
+function _mpay24_payment_validate_online_via_mpay24(array $element, array &$form_state) {
   try {
     $form_state['payment']->method->validate($form_state['payment'], TRUE);
   } catch (\mpay24\PaymentMpay24ApiException $e) {
@@ -208,5 +220,4 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
         break; 
     }
   }
-  $form_state['payment']->form_state = &$form_state;
 }

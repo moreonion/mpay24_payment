@@ -114,17 +114,14 @@ function mpay24_payment_payment_configuration_form_elements(array $element, arra
 function mpay24_payment_payment_configuration_form_elements_validate(array $element, array &$form_state) {
   $values = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
 
-  # validate presence of all fields
+  # validate presence of all fields:
+  #   issuer, credit_card_number, secure_code, expiry_date
   foreach($values as $key => $value) {
     if(empty($value)) {
       form_error($element[$key], t('@name is required', array('@name' => $element[$key]['#title'])));
     }
 
-    if ($element[$key]['#type'] === 'select') {
-      $form_state['payment']->method_data[$key] = $element[$key]['#options'][$value];
-    } else {
-      $form_state['payment']->method_data[$key] = $value;
-    }
+    $form_state['payment']->method_data[$key] = $value;
   }
 
   require_once('creditcard_validation.inc.php');
@@ -138,10 +135,10 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
     3 => 'amex',
   );
 
-  $issuer             = $element['issuer']['#value'];
-  $credit_card_number = $element['credit_card_number']['#value'];
-  $secure_code        = $element['secure_code']['#value'];
-  $expiry_date        = $element['expiry_date']['#value'];
+  $issuer             = $form_state['payment']->method_data['issuer'];
+  $credit_card_number = $form_state['payment']->method_data['credit_card_number'];
+  $secure_code        = $form_state['payment']->method_data['secure_code'];
+  $expiry_date        = $form_state['payment']->method_data['expiry_date'];
 
   # validate creditcard number
   $validation_result = $credit_card_validator->isValidCreditCard($credit_card_number, '', TRUE);
@@ -153,7 +150,7 @@ function mpay24_payment_payment_configuration_form_elements_validate(array $elem
       'Credit card number %card doesn\'t appear to be from issuer %issuer.',
       array(
         '%card'   => $credit_card_number,
-        '%issuer' => $issuers[$issuer]
+        '%issuer' => $element['issuer']['#options'][$issuer],
       )
     )
   );

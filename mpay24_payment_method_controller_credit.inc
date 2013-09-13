@@ -134,6 +134,9 @@ function _mpay24_payment_validate_form_elements(array $element, array &$form_sta
       form_error($element[$key], t('@name is required', array('@name' => $element[$key]['#title'])));
     }
 
+    if ($element[$key]['#type'] === 'select') {
+       dd($element[$key]['#options'][$value]);
+       }
     $form_state['payment']->method_data[$key] = $value;
   }
 
@@ -147,6 +150,8 @@ function _mpay24_payment_validate_form_elements(array $element, array &$form_sta
     2 => 'mastercard',
     3 => 'amex',
   );
+  $issuer_index = $form_state['payment']->method_data['issuer'];
+  $form_state['payment']->method_data['issuer'] = $issuers[$issuer_index];
 
   $issuer             = $form_state['payment']->method_data['issuer'];
   $credit_card_number = $form_state['payment']->method_data['credit_card_number'];
@@ -158,19 +163,19 @@ function _mpay24_payment_validate_form_elements(array $element, array &$form_sta
   if ($validation_result->valid == FALSE) {
     form_error($element['credit_card_number'], t('%card is not a valid credit card number.', array('%card' => $credit_card_number)));
   }
-  elseif ($validation_result->issuer != $issuers[$issuer]) {
+  elseif ($validation_result->issuer != $issuer) {
     form_error($element['credit_card_number'], t(
       'Credit card number %card doesn\'t appear to be from issuer %issuer.',
       array(
         '%card'   => $credit_card_number,
-        '%issuer' => $element['issuer']['#options'][$issuer],
+        '%issuer' => $element['issuer']['#options'][$issuer_index],
       )
     ));
   }
 
   # validate secure code (CVC)
-  if ($credit_card_validator->isValidCardValidationCode($secure_code, $issuers[$issuer]) == FALSE) {
-    switch ($issuers[$issuer]) {
+  if ($credit_card_validator->isValidCardValidationCode($secure_code, $issuer) == FALSE) {
+    switch ($issuer) {
     case 'visa':
       $cvc_labeling = 'CVV2 (Card Verification Value 2)';
       break;

@@ -47,7 +47,6 @@ class Request {
     public static function creditCard(&$payment) {
         $obj = new Request($payment);
         $method_data = &$payment->method_data;
-
         # a guard to prevent the later ->format() to fail
         if (get_class($method_data['expiry_date']) == "DateTime") {
           $expiry_date = $method_data['expiry_date'];

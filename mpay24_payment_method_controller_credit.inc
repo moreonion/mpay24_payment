@@ -134,9 +134,6 @@ function _mpay24_payment_validate_form_elements(array $element, array &$form_sta
       form_error($element[$key], t('@name is required', array('@name' => $element[$key]['#title'])));
     }
 
-    if ($element[$key]['#type'] === 'select') {
-       dd($element[$key]['#options'][$value]);
-       }
     $form_state['payment']->method_data[$key] = $value;
   }
 

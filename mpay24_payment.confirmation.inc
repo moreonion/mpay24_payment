@@ -93,8 +93,8 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
 
   // @todo: Get the url from somewhere else, to make the method independent from
   // the payment context.
-  if(!empty($payment->context_data['webform']['redirect_url'])) {
-    $success_url = url($payment->context_data['webform']['redirect_url'],
+  if(!empty($payment->context_data['redirect_url'])) {
+    $success_url = url($payment->context_data['redirect_url'],
                      array('absolute' => TRUE));
   } else {
     throw new Exception(
@@ -130,14 +130,14 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
 function mpay24_payment_confirmation_status(Payment $payment) {
   $status = $payment->getStatus();
   $timeout = $payment->method->controller_data['request_timeout'];
-  
+
   $payment->method->controller->pollStatus($payment);
   if (($status->created + $timeout) < time()) {
     $payment->setStatus(new PaymentStatusItem(PAYMENT_STATUS_EXPIRED, time(), $payment->pid));
     entity_save('payment', $payment);
   }
   $status = $payment->getStatus();
-  
+
   switch ($status->status) {
     case PAYMENT_STATUS_FAILED:
       drupal_json_output(array('status' => 'error'));

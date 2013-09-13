@@ -202,7 +202,7 @@ class Request {
     public function getSuccessURL() {
         // @todo: Make it independent of the payment context. Maybe replace it with
         // PaymentMethod:finish()
-        return $this->buildURL($this->payment->context_data['webform']['redirect_url']);
+        return $this->buildURL($this->payment->context_data['redirect_url']);
     }
 
     public function getErrorURL() {

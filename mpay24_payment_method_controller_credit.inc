@@ -27,7 +27,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
     }
     if (!isset($this->response)) {
       try {
-        $this->response = new \mpay24\Response($payment, \mpay24\Request::creditCard($payment));
+        $this->response = $this->getResponse($payment);
       } catch (PaymentException $e) {
         $this->exception = $e;
       }
@@ -35,6 +35,10 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
     if ($this->exception) {
       throw $this->exception;
     }
+  }
+
+  function getResponse($payment) {
+    return new \mpay24\Response($payment, \mpay24\Request::creditCard($payment));
   }
 
 

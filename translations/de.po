@@ -1,0 +1,201 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  mpay24.api.inc: n/a
+#  mpay24_payment.confirmation.inc: n/a
+#  mpay24_payment_method_controller_banking.inc: n/a
+#  mpay24_payment_method_controller_common.inc: n/a
+#  mpay24_payment_method_controller_credit.inc: n/a
+#  mpay24_payment_method_controller_dummy.inc: n/a
+#  mpay24_payment.module: n/a
+#  mpay24_payment.info: n/a
+#
+# Roman Zimmermann <roman@more-onion.com>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2013-09-20 09:49+0000\n"
+"PO-Revision-Date: 2013-09-20 13:27+0200\n"
+"Last-Translator: Roman Zimmermann <roman@more-onion.com>\n"
+"Language-Team: British English <kde-i18n-doc@kde.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_GB\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: mpay24.api.inc:181
+msgid ""
+"The administrators of this site need to set a merchant id before this form "
+"becomes usable"
+msgstr ""
+"Die merchant id muss gesetzt werden, bevor die mPay24 Zahlungsmethoden "
+"verfügbar werden."
+
+#: mpay24.api.inc:257
+msgid ""
+"@payment_method payment method encountered some error while contacting the "
+"mPay24 server. The code is \"@code\" and the error message \"@error\". Pid "
+"payment : @pid and pmid method used : @pmid"
+msgstr ""
+"Fehler beim Kontaktieren des mpay24-Servers: Zahlungsmethode @payment_method, "
+"Fehlercode: \"@code\", Fehlermeldung \"@error\". Zahlungs-ID: @pid, "
+"Zahlungsmethode-ID: @pmid."
+
+#: mpay24.api.inc:273
+msgid ""
+"@payment_method payment method encountered some HTTP error while trying to "
+"contact the mPay24 server. Error code \"@code\" and the error message "
+"\"@error\". Pid payment : @pid and pmid method used : @pmid"
+msgstr ""
+"HTTP-Fehler beim Kontaktieren des mpay24-Servers: Zahlungsmethode "
+"@payment_method, Fehlercode: \"@code\", Fehlermeldung \"@error\". "
+"Zahlungs-ID: @pid, Zahlungsmethode-ID: @pmid."
+
+#: mpay24_payment.confirmation.inc:27
+msgid " Confirmation Interface: Mandatory parameter @arg_name missing."
+msgstr ""
+
+#: mpay24_payment.confirmation.inc:90
+msgid "Confirmation polling for non-redirected payment @pid requested"
+msgstr ""
+
+#: mpay24_payment.confirmation.inc:101
+msgid "No redirection url set for redirected payment @pid."
+msgstr "Für die Zahlung @pid ist keine Weiterleitung definiert."
+
+#: mpay24_payment.confirmation.inc:121
+msgid "Please wait while we are proccessing your payment."
+msgstr "Der Zahlungsvorgang läuft. Bitte warten."
+
+#: mpay24_payment.confirmation.inc:161
+msgid "An error occured. Please try again later."
+msgstr "Unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+
+#: mpay24_payment.confirmation.inc:61;158
+msgid "mpay24_payment"
+msgstr ""
+
+#: mpay24_payment.confirmation.inc:61
+msgid ""
+"Confirmation Interface: OPERATION: \"@o\", STATUS: \"@s\", TID: \"@t\", "
+"PRICE: \"@p\", CURRENCY: \"@c\", MPAYTID: \"@m\""
+msgstr ""
+
+#: mpay24_payment.confirmation.inc:158
+msgid "Reported an error to the user of Payment @pid."
+msgstr ""
+
+#: mpay24_payment_method_controller_banking.inc:15
+msgid "mPay24 Online Banking"
+msgstr "mPay24 Online Banking"
+
+#: mpay24_payment_method_controller_banking.inc:47
+msgid "Online Banking"
+msgstr "Online Banking"
+
+#: mpay24_payment_method_controller_common.inc:20
+msgid "mPay24"
+msgstr "mPay24"
+
+#: mpay24_payment_method_controller_common.inc:21
+msgid ""
+"A Payment API method to transfer money using the payment provider "
+"https://mpay24.com"
+msgstr "Zahlungsmethoden für den mPay24-Zahlungsprovider (https://mpay24.com)"
+
+#: mpay24_payment_method_controller_credit.inc:17
+msgid "mPay24 Credit Card"
+msgstr "mPay24 Kreditkarte"
+
+#: mpay24_payment_method_controller_credit.inc:68
+msgid "Credit Card"
+msgstr "Kreditkarte"
+
+#: mpay24_payment_method_controller_credit.inc:81
+msgid "Issuer"
+msgstr "Herausgeber"
+
+#: mpay24_payment_method_controller_credit.inc:87
+msgid "Credit card number "
+msgstr "Kreditkartennummer"
+
+#: mpay24_payment_method_controller_credit.inc:95
+msgid "Secure code"
+msgstr "Secure code"
+
+#: mpay24_payment_method_controller_credit.inc:103
+msgid "Expiry date"
+msgstr "gültig bis"
+
+#: mpay24_payment_method_controller_credit.inc:138
+msgid "@name is required"
+msgstr "Das Feld @name muss ausgefüllt sein."
+
+#: mpay24_payment_method_controller_credit.inc:165
+msgid "%card is not a valid credit card number."
+msgstr "%card ist keine gültige Kreditkartennummer."
+
+#: mpay24_payment_method_controller_credit.inc:168
+msgid "Credit card number %card doesn't appear to be from issuer %issuer."
+msgstr ""
+"Die Kreditkartennummer %card scheint nicht zum Herausgeber %issuer zu gehören."
+
+#: mpay24_payment_method_controller_credit.inc:200
+msgid "The entered expiration date is wrong or the card is expired."
+msgstr ""
+"Das Gültigkeitsdatum passt nicht zu dieser Kreditkarte oder die Karte is "
+"nicht mehr gültig."
+
+#: mpay24_payment_method_controller_credit.inc:222
+msgid "Please enter a valid credit card number."
+msgstr "Bitte geben Sie eine gültige Kreditkartennummer an."
+
+#: mpay24_payment_method_controller_credit.inc:225
+msgid "Please enter the correct secure code."
+msgstr "Bitte geben Sie den passenden Securecode an."
+
+#: mpay24_payment_method_controller_dummy.inc:129 mpay24_payment.module:106
+msgid "Timeout for payment requests"
+msgstr "Timeout für Zahlungsanfragen."
+
+#: mpay24_payment_method_controller_dummy.inc:130 mpay24_payment.module:107
+msgid "Timeout for the payment request to MPay24 (in Seconds)."
+msgstr "Timeout für Anfragen an mPay24 (in Sekunden)."
+
+#: mpay24_payment.module:92
+msgid "MPay24 MerchantID"
+msgstr "mPay24 MerchantID"
+
+#: mpay24_payment.module:93
+msgid "Available from MPay24 support."
+msgstr "beim mPay24-Support erhältlich"
+
+#: mpay24_payment.module:99
+msgid "Use the test API"
+msgstr "Testschnittstelle verwenden"
+
+#: mpay24_payment.module:100
+msgid "Requires a different MerchantID."
+msgstr "benötigt eine andere MerchantID."
+
+#: mpay24_payment.module:24
+msgid "Confirmation Interface"
+msgstr "Confirmation Interface"
+
+#: mpay24_payment.info:0
+msgid "MPay24 (Payment)"
+msgstr "mPay24 (Zahlung)"
+
+#: mpay24_payment.info:0
+msgid "A payment method type that uses mpay24.com"
+msgstr "Zahlungsabwicklung über mPay24 (mpay24.com)"
+
+#: mpay24_payment.info:0
+msgid "Payment"
+msgstr ""
+
+

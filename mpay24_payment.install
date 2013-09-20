@@ -60,7 +60,6 @@ function mpay24_payment_schema() {
       'mpaytid' => array(
         'description' => 'Transaction ID assigned by mpay24',
         'type'        => 'int',
-        'not null'    => TRUE,
       ),
     ),
     'foreign keys' => array(
@@ -83,7 +82,6 @@ function mpay24_payment_update_1() {
   db_add_field('mpay24_payment_tids', 'mpaytid', array(
     'description' => 'Transaction ID assigned by mpay24',
     'type'        => 'int',
-    'not null'    => TRUE,
   ));
   $sql = <<<SQL
 UPDATE {mpay24_payment_tids} t

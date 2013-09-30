@@ -31,7 +31,7 @@ class PaymentMethodControllerMPay24OnlineBanking extends PaymentMethodController
    */
   function execute(Payment $payment) {
     $response = new \mpay24\Response($payment, \mpay24\Request::onlineBanking($payment));
-    drupal_goto($response->uri);
+    $payment->form_state['redirect'] = $response->uri;
   }
 }
 
@@ -60,4 +60,7 @@ function mpay24_payment_banking_configuration_form_elements(array $element, arra
  * Implements form validate callback for
  * mpay24_payment_banking_configuration_form_elements
  */
-function mpay24_payment_payment_banking_form_elements_validate(array $element, array &$form_state) {}
+function mpay24_payment_payment_banking_form_elements_validate(array $element, array &$form_state) {
+  // needed for later execute()
+  $form_state['payment']->form_state = &$form_state;
+}

@@ -60,7 +60,7 @@ function mpay24_payment_banking_configuration_form_elements(array $element, arra
  * Implements form validate callback for
  * mpay24_payment_banking_configuration_form_elements
  */
-function mpay24_payment_payment_banking_form_elements_validate(array $element, array &$form_state) {
-  // needed for later execute()
+function mpay24_payment_banking_configuration_form_elements_validate(array $element, array &$form_state) {
+  // safe reference to form_state, needed for later execute()
   $form_state['payment']->form_state = &$form_state;
 }

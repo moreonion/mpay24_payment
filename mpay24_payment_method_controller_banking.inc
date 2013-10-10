@@ -64,3 +64,4 @@ function mpay24_payment_banking_configuration_form_elements_validate(array $elem
   // safe reference to form_state, needed for later execute()
   $form_state['payment']->form_state = &$form_state;
 }
+

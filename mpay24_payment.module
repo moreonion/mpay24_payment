@@ -151,7 +151,7 @@ function mpay24_payment_entity_load(array $entities, $entity_type) {
  * Implements hook_ENTITY_TYPE_ACTION().
  */
 function mpay24_payment_payment_insert(Payment $payment) {
-  if (isset($payment->tid) || isset($payment->mpaytid)) {
+  if ($payment->method->controller instanceof PaymentMethodControllerMPay24) {
     db_insert('mpay24_payment_tids')
      ->fields(array(
        'pid' => $payment->pid,
@@ -162,7 +162,7 @@ function mpay24_payment_payment_insert(Payment $payment) {
   }
 }
 function mpay24_payment_payment_update(Payment $payment) {
-  if (isset($payment->tid) || isset($payment->mpaytid)) {
+  if ($payment->method->controller instanceof PaymentMethodControllerMPay24) {
     db_update('mpay24_payment_tids')
      ->fields(array(
        'tid' => isset($payment->tid) ? $payment->tid : '',

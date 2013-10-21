@@ -199,9 +199,12 @@ class Request {
     }
 
     public function getSuccessURL() {
-        // @todo: Make it independent of the payment context. Maybe replace it with
-        // PaymentMethod:finish()
-        return $this->buildURL($this->payment->context_data['redirect_url']);
+      $context_data = $this->payment->context_data;
+      if (isset($context_data['context'])) {
+        return $context_data['context']->getSuccessURL();
+      }
+      // @TODO give a sensible default here.
+      return $GLOBALS['base_url'];
     }
 
     public function getErrorURL() {

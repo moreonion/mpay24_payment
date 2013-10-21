@@ -91,12 +91,10 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
         array('@pid' => $payment->pid)));
   };
 
-  // @todo: Get the url from somewhere else, to make the method independent from
-  // the payment context.
-  if(!empty($payment->context_data['redirect_url'])) {
-    $success_url = url($payment->context_data['redirect_url'],
-                     array('absolute' => TRUE));
+  if (isset($payment->context_data['context'])) {
+    $success_url = $payment->context_data['context']->getSuccessUrl();
   } else {
+    //@TODO: use some default success-url.
     throw new Exception(
       t("No redirection url set for redirected payment @pid.",
         array('@pid' => $payment->pid)));

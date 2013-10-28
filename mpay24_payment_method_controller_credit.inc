@@ -1,11 +1,12 @@
 <?php
-
-module_load_include('inc', 'mpay24_payment', 'mpay24.api');
-
 /**
  * @file
  * MPay24 payment method controller for credit card payments
  */
+
+module_load_include('inc', 'mpay24_payment', 'mpay24.api');
+module_load_include('php', 'mpay24_payment', 'lib/MPay24CreditCardForm');
+
 class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPay24 {
   protected $response = NULL;
   protected $exception = NULL;
@@ -14,6 +15,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
     parent::__construct();
 
     $this->title = t('mPay24 Credit Card');
+    $this->form = new \Drupal\payment_forms\MPay24CreditCardForm();
   }
 
   /**

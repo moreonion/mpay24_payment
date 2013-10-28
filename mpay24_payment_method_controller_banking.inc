@@ -1,6 +1,7 @@
 <?php
 
 module_load_include('inc', 'mpay24_payment', 'mpay24.api');
+module_load_include('php', 'payment_forms', 'lib/OnlineBankingForm');
 
 /**
  * @file
@@ -11,6 +12,7 @@ class PaymentMethodControllerMPay24OnlineBanking extends PaymentMethodController
     parent::__construct();
 
     $this->title = t('mPay24 Online Banking');
+    $this->form = new \Drupal\payment_forms\OnlineBankingForm();
   }
 
 

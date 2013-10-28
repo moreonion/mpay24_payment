@@ -7,8 +7,6 @@ module_load_include('inc', 'mpay24_payment', 'mpay24.api');
  * MPay24 payment method controller for online banking payments.
  */
 class PaymentMethodControllerMPay24OnlineBanking extends PaymentMethodControllerMPay24 {
-  public $payment_configuration_form_elements_callback = 'mpay24_payment_banking_configuration_form_elements';
-
   function __construct() {
     parent::__construct();
 
@@ -34,34 +32,3 @@ class PaymentMethodControllerMPay24OnlineBanking extends PaymentMethodController
     $payment->form_state['redirect'] = $response->uri;
   }
 }
-
-/**
- * Implements
- * PaymentMethodController::payment_configuration_form_elements_callback.
- */
-function mpay24_payment_banking_configuration_form_elements(array $element, array &$form_state) {
-  $element = array(
-    '#type'             => 'fieldset',
-    '#collapsible'	=> TRUE,
-    '#collapsed'	=> TRUE,
-    '#title'		=> t('Online Banking'),
-  );
-
-  $element['redirection_info'] = array(
-    '#type'	=> 'markup',
-    '#markup'  => t('Nach einem Klick auf "Fertig" werden Sie zu unserem externen'
-                . ' Anbieter weitergleitet um die Zahlung abzuschließen.'),
-    '#weight'	=> 0,
-  );
-  return $element;
-}
-
-/**
- * Implements form validate callback for
- * mpay24_payment_banking_configuration_form_elements
- */
-function mpay24_payment_banking_configuration_form_elements_validate(array $element, array &$form_state) {
-  // safe reference to form_state, needed for later execute()
-  $form_state['payment']->form_state = &$form_state;
-}
-

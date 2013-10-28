@@ -14,6 +14,8 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
   );
 
   public $payment_method_configuration_form_elements_callback = 'mpay24_payment_payment_method_configuration_form_elements';
+  public $payment_configuration_form_elements_callback        = 'payment_forms_method_form';
+
 
 
   function __construct() {
@@ -90,7 +92,7 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
       ->condition('pmid', $method->pmid)
       ->execute();
   }
-  
+
   /**
    * Allows the controller to act when the payment status is polled.
    */

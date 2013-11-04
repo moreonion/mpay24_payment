@@ -15,7 +15,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
     parent::__construct();
 
     $this->title = t('mPay24 Credit Card');
-    $this->form = new \Drupal\payment_forms\MPay24CreditCardForm();
+    $this->form = new \Drupal\mpay24_payment\MPay24CreditCardForm();
   }
 
   /**

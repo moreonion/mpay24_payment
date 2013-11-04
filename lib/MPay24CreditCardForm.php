@@ -6,12 +6,12 @@
  * @copyright Copyright (c) 2013 copyright
  */
 
-namespace Drupal\payment_forms;
+namespace Drupal\mpay24_payment;
 
 /**
  *
  */
-class MPay24CreditCardForm extends CreditCardForm {
+class MPay24CreditCardForm extends \Drupal\payment_forms\CreditCardForm {
   public function validateForm(array &$element, array &$form_state) {
     parent::validateForm($element, $form_state);
 

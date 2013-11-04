@@ -78,6 +78,13 @@ function mpay24_payment_schema() {
   return $schema;
 }
 
+/**
+ * Enable new dependency payment_forms.
+ */
+function mpay24_payment_update_2() {
+  module_enable(array('payment_forms'));
+}
+
 function mpay24_payment_update_1() {
   db_add_field('mpay24_payment_tids', 'mpaytid', array(
     'description' => 'Transaction ID assigned by mpay24',

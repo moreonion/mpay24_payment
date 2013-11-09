@@ -55,6 +55,9 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
       while ($data = $result->fetchAssoc()) {
         $method = $entities[$data['pmid']];
         unset($data['pmid']);
+        if ($data['testmode']) {
+          $data['merchantid'] = '9' . substr($data['merchantid'], 1);
+        }
         $method->controller_data = (array) $data;
         $method->controller_data += $method->controller->controller_data_defaults;
       }

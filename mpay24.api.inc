@@ -105,6 +105,9 @@ class Request {
             'method' => 'POST',
             'data'   => drupal_http_build_query($this->data));
         $this->response = drupal_http_request($this->api_url, $options);
+        if (variable_get('devel_mode', 0)) {
+          watchdog('mpay24_payment', 'Received response: !response', array('!response' => var_export($this->response, TRUE)), WATCHDOG_DEBUG);
+	}
         return $this->response;
     }
 

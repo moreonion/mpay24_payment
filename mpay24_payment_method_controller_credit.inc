@@ -5,7 +5,6 @@
  */
 
 module_load_include('inc', 'mpay24_payment', 'mpay24.api');
-module_load_include('php', 'mpay24_payment', 'lib/MPay24CreditCardForm');
 
 class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPay24 {
   protected $response = NULL;

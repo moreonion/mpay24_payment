@@ -54,6 +54,12 @@ class Request {
           $expiry_date = date_create();
         }
 
+        if (in_array($method_data['issuer'], array('visa', 'mastercard'))) {
+          $auth_3ds = TRUE;
+        } else {
+          $auth_3ds = (bool) $method_data['auth_3ds'];
+        }
+
         $obj->prepare('ACCEPTPAYMENT');
         $obj->addData(array(
             'P_TYPE'     => 'CC',
@@ -61,7 +67,7 @@ class Request {
             'IDENTIFIER' => $method_data['credit_card_number'],
             'EXPIRY'     => $expiry_date->format('ym'),
             'CVC'        => $method_data['secure_code'],
-            'AUTH_3DS'   => isset($method_data['auth_3ds']) ? $method_data['auth_3ds'] : 'N',
+            'AUTH_3DS'   => $auth_3ds ? 'Y' : 'N',
         ));
 
         return $obj->send();

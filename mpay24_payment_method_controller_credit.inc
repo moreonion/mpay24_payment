@@ -17,25 +17,6 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
     $this->form = new \Drupal\mpay24_payment\MPay24CreditCardForm();
   }
 
-  /**
-   * Implements PaymentMethodController::validate().
-   */
-  function validate(Payment $payment, PaymentMethod $payment_method, $strict) {
-    if (!$strict) {
-    	return;
-    }
-    if (!isset($this->response)) {
-      try {
-        $this->response = $this->getResponse($payment);
-      } catch (PaymentException $e) {
-        $this->exception = $e;
-      }
-    }
-    if ($this->exception) {
-      throw $this->exception;
-    }
-  }
-
   function getResponse($payment) {
     return new \mpay24\Response($payment, \mpay24\Request::creditCard($payment));
   }
@@ -47,9 +28,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
    * our server and set the payment status accordingly
    */
   function execute(Payment $payment) {
-    if ($this->exception) {
-      throw $this->exception;
-    }
-    $payment->form_state['redirect'] = $this->response->uri;
+    $response = $this->getResponse($payment);
+    $payment->form_state['redirect'] = $response->uri;
   }
 }

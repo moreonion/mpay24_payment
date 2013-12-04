@@ -224,13 +224,16 @@ class Response {
     public $parsed_data = array();
 
     public function __construct($payment, $response) {
-        $this->payment  = &$payment;
-        $this->response = &$response;
+      $this->payment  = &$payment;
+      $this->response = &$response;
 
-        if (isset($this->response->code)
-            && $this->response->code === '200') {
-          parse_str(rtrim($this->response->data), $this->data);
-          $this->data = array_change_key_case($this->data);
+      if (isset($response->code) && $response->code === '200') {
+        parse_str(rtrim($response->data), $this->data);
+        $this->data = array_change_key_case($this->data);
+
+        if (isset($this->data['mpaytid'])) {
+          $payment->mpaytid = $this->data['mpaytid'];
+        }
 
         if($this->data['status'] === 'OK') {
           $this->handleReturnCode();

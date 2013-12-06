@@ -10,6 +10,7 @@
 
 use Drupal\mpay24_payment\ConfirmationRequest;
 use Drupal\mpay24_payment\ErrorRequest;
+use Drupal\mpay24_payment\SuccessRequest;
 
 function mpay24_payment_confirmation_interface_handler(Payment $payment) {
   drupal_add_http_header('Content-Type', 'text/plain');
@@ -108,6 +109,23 @@ function mpay24_payment_confirmation_error(Payment $payment) {
     ));
   } else {
     $message = t('An error occured while processing your payment. Contact the site administrator if the problem persists.');
+  }
+  $output = array(
+    '#markup' => $message,
+  );
+  return $output;
+}
+
+function mpay24_payment_confirmation_success(Payment $payment) {
+  $request = new SuccessRequest($payment);
+  $request->validate($_GET);
+  $request->setStatus();
+
+  if (isset($payment->context_data['context'])) {
+    $context = $payment->context_data['context'];
+    drupal_goto($context->getSuccessUrl());
+  } else {
+    $message = t('Your payment was successful. Thanks.');
   }
   $output = array(
     '#markup' => $message,

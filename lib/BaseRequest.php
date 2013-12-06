@@ -18,8 +18,8 @@ abstract class BaseRequest {
     $parameters = implode(', ', $parameters);
     \watchdog(
       'mpay24_payment',
-      'Confirmation Interface: Payment(!pid) -> !parameters',
-      array('!parameters' => $parameters, '!pid' => $this->payment->pid),
+      '!class: Payment(!pid) -> !parameters',
+      array('!class' => get_called_class(), '!parameters' => $parameters, '!pid' => $this->payment->pid),
       WATCHDOG_INFO
     );
   }

@@ -200,20 +200,11 @@ class Request {
     }
 
     protected function buildURL($relative) {
-        return url($relative, array(
-                'absolute' => true,
-                'https'    => true,
-            )
-        );
+        return url($relative, array('absolute' => TRUE, 'https' => TRUE));
     }
 
     public function getSuccessURL() {
-      $context_data = $this->payment->context_data;
-      if (isset($context_data['context'])) {
-        return $context_data['context']->getSuccessURL();
-      }
-      // @TODO give a sensible default here.
-      return $GLOBALS['base_url'];
+      return $this->buildURL(MPAY24_PAYMENT_SUCCESS_URL. $this->payment->pid);
     }
 
     public function getErrorURL() {

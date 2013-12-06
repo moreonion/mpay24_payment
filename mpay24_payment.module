@@ -6,42 +6,38 @@ define('MPAY24_PAYMENT_CONFIRMATION_URL', 'mpay24_payment/confirm/handle/');
 define('MPAY24_PAYMENT_CONFIRMATION_STATUS_URL', 'mpay24_payment/confirm/status/');
 define('MPAY24_PAYMENT_CONFIRMATION_WAIT_URL', 'mpay24_payment/confirm/wait/');
 define('MPAY24_PAYMENT_ERROR_URL', 'mpay24_payment/confirm/error/');
+define('MPAY24_PAYMENT_SUCCESS_URL', 'mpay24_payment/confirm/success/');
 
 /**
  * Implements hook_menu()
  */
 function mpay24_payment_menu() {
   $items = array();
-  
+
   $default = array(
     'load arguments' => array('payment'),
     'page arguments' => array(3),
     'type' => MENU_CALLBACK,
     'file' => 'mpay24_payment.confirmation.inc',
+    'access callback' => 'mpay24_payment_confirmation_access',
+    'access arguments' => array(3),
   );
-  
+
   $items[MPAY24_PAYMENT_CONFIRMATION_URL . '%entity_object'] = array(
     'title' => 'Confirmation Interface',
     'page callback' => 'mpay24_payment_confirmation_interface_handler',
-    'access callback' => TRUE, // @todo: check mpay24 ip.
   ) + $default;
-
+  $items[MPAY24_PAYMENT_SUCCESS_URL . '%entity_object'] = array(
+    'page callback' => 'mpay24_payment_confirmation_success',
+  ) + $default;
   $items[MPAY24_PAYMENT_ERROR_URL . '%entity_object'] = array(
     'page callback' => 'mpay24_payment_confirmation_error',
-    'access callback' => 'mpay24_payment_confirmation_access',
-    'access arguments' => array(3),
   ) + $default;
-
   $items[MPAY24_PAYMENT_CONFIRMATION_STATUS_URL . '%entity_object'] = array(
     'page callback' => 'mpay24_payment_confirmation_status',
-    'access callback' => 'mpay24_payment_confirmation_access',
-    'access arguments' => array(3),
   ) + $default;
-
   $items[MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . '%entity_object'] = array(
     'page callback' => 'mpay24_payment_confirmation_wait',
-    'access callback' => 'mpay24_payment_confirmation_access',
-    'access arguments' => array(3),
   ) + $default;
   return $items;
 }

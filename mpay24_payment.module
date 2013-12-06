@@ -55,11 +55,11 @@ function mpay24_payment_menu() {
  *
  * @return
  *   TRUE if argument is a payment instance
- *   Otherwise, return FALSE
+ *   and $_GET['TID'] matches it's transaction id.
  */
-function mpay24_payment_confirmation_access($arg) {
-  if ($arg instanceof Payment) {
-    return TRUE;
+function mpay24_payment_confirmation_access($payment) {
+  if ($payment instanceof Payment && isset($payment->tid)) {
+    return $_GET['TID'] == $payment->tid;
   }
   return FALSE;
 }

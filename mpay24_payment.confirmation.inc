@@ -9,8 +9,9 @@
  */
 
 use Drupal\mpay24_payment\ConfirmationRequest;
+use Drupal\mpay24_payment\ErrorRequest;
 
-function mpay24_payment_confirmation_interface_handler($payment) {
+function mpay24_payment_confirmation_interface_handler(Payment $payment) {
   drupal_add_http_header('Content-Type', 'text/plain');
   try {
     $request = new ConfirmationRequest($payment);
@@ -94,17 +95,9 @@ function mpay24_payment_confirmation_status(Payment $payment) {
 }
 
 function mpay24_payment_confirmation_error(Payment $payment) {
-  try {
-    $request = new ConfirmationRequest($payment);
-    $request->validate($_GET);
-    $request->setStatus();
-  } catch(PaymentException $e) {
-    watchdog('mpay24_payment', 'Exception in error request: ' . $e->getMessage());
-    if ($payment->getStatus() != PAYMENT_STATUS_FAILED) {
-      $payment->setStatus(new PaymentStatusItem(PAYMENT_STATUS_FAILED, REQUEST_TIME, $payment->pid));
-    }
-  }
-
+  $request = new ErrorRequest($payment);
+  $request->validate($_GET);
+  $request->setStatus();
   watchdog('mpay24_payment', 'Reported an error to the user of Payment @pid.', array('@pid' => $payment->pid));
 
   if (isset($payment->context_data['context'])) {

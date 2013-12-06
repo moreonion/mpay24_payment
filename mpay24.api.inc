@@ -258,7 +258,9 @@ class Response {
           $this->uri = $this->data['location'];
           break;
         case 'OK':
-          $this->uri = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $this->payment->pid;
+          $path = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $this->payment->pid;
+          $options['query']['TID'] = $this->payment->tid;
+          $this->uri = array($path, $options);
           break;
         default:
           $this->handleAPIError();

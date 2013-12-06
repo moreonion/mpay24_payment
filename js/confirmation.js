@@ -1,26 +1,16 @@
 jQuery(document).ready(function() {
     mpay24_payment = {
-        current_time_in_seconds: function () {
-            return Math.floor(new Date().getTime() / 1000);
-        },
-
         poll: function () {
             jQuery.ajax({
                 contentType: 'application/json',
-                url: Drupal.settings.mpay24_payment.status_url + Drupal.settings.mpay24_payment.pid,
+                url: Drupal.settings.mpay24_payment.status_url,
                 success: function(data) {
                     console.log('status', data.status);
-                    if (data.status === null) {
-                        setTimeout(function() {
-                            if (window.mpay24_payment.current_time_in_seconds() < window.mpay24_payment.timeout) {
-                                window.mpay24_payment.poll();
-                            } else {
-                                window.mpay24_payment.error('timeout');
-                            }
-                        }, 1000);
+                    if (data.status === 'poll') {
+                        setTimeout(window.mpay24_payment.poll, 1000);
                     }
-                    else if (data.status === 'success') {
-                        window.mpay24_payment.redirect(Drupal.settings.mpay24_payment.success_url);
+                    else if (data.status === 'redirect') {
+                        window.mpay24_payment.redirect(data.url);
                     } else {
                         window.mpay24_payment.error('server error');
                     }
@@ -31,17 +21,11 @@ jQuery(document).ready(function() {
             });
         },
 
-        error: function(reason) {
-            var s = Drupal.settings.mpay24_payment;
-            window.mpay24_payment.redirect(s.error_url + s.pid);
-        },
-
         redirect: function(uri) {
             window.location.replace(uri)
         },
 
         init: function() {
-            this.timeout = this.current_time_in_seconds() + Drupal.settings.mpay24_payment.timeout;
             this.poll();
         }
     };

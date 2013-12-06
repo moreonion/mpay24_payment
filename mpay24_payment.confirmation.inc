@@ -27,36 +27,9 @@ function mpay24_payment_confirmation_interface_handler(Payment $payment) {
 }
 
 function mpay24_payment_confirmation_wait(Payment $payment) {
-  if (!payment_status_is_or_has_ancestor($payment->getStatus()->status,
-      PAYMENT_MPAY24_STATUS_REDIRECT)) {
-    throw new PaymentException(
-      t("Confirmation polling for non-redirected payment @pid requested",
-        array('@pid' => $payment->pid)));
-  };
-
-  if (isset($payment->context_data['context'])) {
-    $success_url = $payment->context_data['context']->getSuccessUrl();
-  } else {
-    //@TODO: use some default success-url.
-    throw new Exception(
-      t("No redirection url set for redirected payment @pid.",
-        array('@pid' => $payment->pid)));
-  }
-
-  $url_options = array(
-    'absolute' => true,
-    'https'    => true,
-  );
-  drupal_add_js(
-    array(
-      'mpay24_payment' => array(
-        'pid' => $payment->pid,
-        'timeout' => empty($payment->method->controller_data['timeout']) ? 30 : $payment->method->controller_data['request_timeout'],
-        'success_url' => $success_url,
-        'error_url'   => url(MPAY24_PAYMENT_ERROR_URL, $url_options),
-        'status_url' => url(MPAY24_PAYMENT_CONFIRMATION_STATUS_URL, $url_options),
-      ),
-    ), 'setting');
+  $options['query']['TID'] = $_GET['TID'];
+  $status_url = url(MPAY24_PAYMENT_CONFIRMATION_STATUS_URL . $payment->pid, $options);
+  drupal_add_js(array('mpay24_payment' => array('status_url' => $status_url)), 'setting');
 
   return array(
     '#markup' => '<div class="mo-dialog-wrapper visible"><div class="mo-dialog-content loading"><p>'.t('Please wait while we are proccessing your payment.').'</p></div></div>',
@@ -70,28 +43,32 @@ function mpay24_payment_confirmation_wait(Payment $payment) {
 
 function mpay24_payment_confirmation_status(Payment $payment) {
   $status = $payment->getStatus();
-  $timeout = $payment->method->controller_data['request_timeout'];
-
   $payment->method->controller->pollStatus($payment);
-  if (($status->created + $timeout) < time()) {
+
+  $output = array();
+  $args['query']['TID'] = $payment->tid;
+  switch ($status->status) {
+    case PAYMENT_STATUS_FAILED:
+    case PAYMENT_STATUS_EXPIRED:
+      $args['query']['ERRTEXT'] = $status->status;
+      $output['status'] = 'redirect';
+      $output['url'] = url(MPAY24_PAYMENT_ERROR_URL . $payment->pid, $args);
+      break;
+    case PAYMENT_STATUS_SUCCESS:
+      $output['status'] = 'redirect';
+      $output['url'] = url(MPAY24_PAYMENT_SUCCESS_URL . $payment->pid, $args);
+      break;
+    default:
+      $output['status'] = 'poll';
+  }
+
+  $timeout = $payment->method->controller_data['request_timeout'];
+  if ($output['status'] == 'poll' && ($status->created + $timeout) < time()) {
     $payment->setStatus(new PaymentStatusItem(PAYMENT_STATUS_EXPIRED, time(), $payment->pid));
     entity_save('payment', $payment);
   }
-  $status = $payment->getStatus();
 
-  switch ($status->status) {
-    case PAYMENT_STATUS_FAILED:
-      drupal_json_output(array('status' => 'error'));
-      break;
-    case PAYMENT_STATUS_EXPIRED:
-      drupal_json_output(array('status' => 'timeout'));
-      break;
-    case PAYMENT_STATUS_SUCCESS:
-      drupal_json_output(array('status' => 'success'));
-      break;
-    default:
-      drupal_json_output(array('status' => NULL));
-  }
+  drupal_json_output($output);
   exit(0);
 }
 

@@ -32,7 +32,9 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
         exit;
       case 'poll':
         $payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_REDIRECT));
-        $payment->form_state['redirect'] = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $payment->pid;
+        $path = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $this->payment->pid;
+        $options['query']['TID'] = $payment->tid;
+        $payment->form_state['redirect'] = array($path, $options);
         break;
       case 'error_page':
         $payment->form_state['redirect'] = $request->getErrorURL();

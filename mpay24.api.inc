@@ -244,7 +244,7 @@ class Response {
         parse_str(rtrim($response->data), $this->data);
         $this->data = array_change_key_case($this->data);
 
-        if (isset($this->data['mpaytid'])) {
+        if (!empty($this->data['mpaytid'])) {
           $payment->mpaytid = $this->data['mpaytid'];
         }
 

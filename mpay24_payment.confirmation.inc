@@ -96,7 +96,7 @@ function mpay24_payment_confirmation_status(Payment $payment) {
 function mpay24_payment_confirmation_error(Payment $payment) {
   try {
     $request = new ConfirmationRequest($payment);
-    $request->validate();
+    $request->validate($_GET);
     $request->setStatus();
   } catch(PaymentException $e) {
     watchdog('mpay24_payment', 'Exception in error request: ' . $e->getMessage());
@@ -119,4 +119,5 @@ function mpay24_payment_confirmation_error(Payment $payment) {
   $output = array(
     '#markup' => $message,
   );
+  return $output;
 }

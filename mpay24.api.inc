@@ -233,6 +233,13 @@ class Response {
       $this->payment  = &$payment;
       $this->response = &$response;
 
+      if (variable_get('mpay24_payment_devel', 0) || variable_get('devel_mode', 0)) {
+        watchdog('mpay24_payment', 'mpay24 response for payment !pid: !response', array(
+          '!pid' => $this->payment->pid,
+          '!response' => var_export($this, TRUE),
+        ), WATCHDOG_DEBUG);
+      }
+
       if (isset($response->code) && $response->code === '200') {
         parse_str(rtrim($response->data), $this->data);
         $this->data = array_change_key_case($this->data);
@@ -250,6 +257,7 @@ class Response {
         $this->handleHTTPError();
       }
     }
+
     function handleReturnCode() {
       $this->payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_REDIRECT));
       entity_save('payment', $this->payment);
@@ -264,6 +272,12 @@ class Response {
         default:
           $this->handleAPIError();
       }
+      if (variable_get('mpay24_payment_devel', 0) || variable_get('devel_mode', 0)) {
+        watchdog('mpay24_payment', 'Redirect paymen !pid to !uri.', array(
+          '!pid' => $this->payment->pid,
+          '!uri' => $this->uri,
+        ), WATCHDOG_DEBUG);
+      }
     }
 
     function handleAPIError() {
@@ -271,7 +285,7 @@ class Response {
       entity_save('payment', $this->payment);
       $message = t(
         '@payment_method payment method encountered some error while contacting the mPay24 server. The code is "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid',
-	array(
+        array(
           '@code'            => $this->data['returncode'],
           '@error'           => isset($this->data['external_error']) ? $this->data['external_error']: "",
           '@pid'             => $this->payment->pid,
@@ -287,13 +301,13 @@ class Response {
       entity_save('payment', $this->payment);
       $message = t(
         '@payment_method payment method encountered some HTTP error while trying to contact the mPay24 server. Error code "@code" and the error message "@error". Pid payment : @pid and pmid method used : @pmid',
-	array(
+        array(
           '@code'           => $this->response->code,
           '@error'          => $this->response->error,
           '@pid'            => $this->payment->pid,
           '@pmid'           => $this->payment->method->pmid,
           '@payment_method' => $this->payment->method->title_generic,
-	)
+        )
       );
       throw new \PaymentException($message);
     }

@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * @file
  * Implements mPay24s confirmation interface, see section 4.2.6 of the spec.
@@ -9,80 +8,20 @@
  *   recommendations
  */
 
+use Drupal\mpay24_payment\ConfirmationRequest;
+
 function mpay24_payment_confirmation_interface_handler($payment) {
+  drupal_add_http_header('Content-Type', 'text/plain');
   try {
-    if (!isset($_GET['TID']) || $payment->tid != $_GET['TID']) {
-      throw new PaymentException(
-        'Can\'t handle confirmation request without a valid transaction ID.');
-    }
-
-    $request = array();
-    $transaction_parameters = array(
-      'OPERATION', 'STATUS', 'TID', 'PRICE', 'CURRENCY', 'MPAYTID');
-    foreach ($transaction_parameters as $transaction_parameter) {
-      if (isset($_GET[$transaction_parameter]) == TRUE) {
-        $request[$transaction_parameter] = check_plain($_GET[$transaction_parameter]);
-      } else {
-        throw new PaymentException(
-          t(' Confirmation Interface: Mandatory parameter @arg_name missing.',
-            array('@arg_name' => $transaction_parameter)));
-      }
-    }
-
-    foreach (array('LANGUAGE', 'MSG') as $transaction_parameter) {
-      if (isset($_GET[$transaction_parameter]) == TRUE) {
-        $request[$transaction_parameter] = check_plain($_GET[$transaction_parameter]);
-      }
-      else { $request[$transaction_parameter] = NULL; }
-    }
-
-    $status = PAYMENT_STATUS_UNKNOWN;
-    switch ($request['STATUS']) {
-      case 'ERROR':
-        $status = PAYMENT_STATUS_FAILED;
-        break;
-      case 'SUSPENDED':
-      case 'TIMEOUT':
-        $status = PAYMENT_STATUS_EXPIRED;
-        break;
-      case 'BILLED':
-      case 'RESERVED':
-      case 'CREDITED':
-        $status = PAYMENT_STATUS_SUCCESS;
-        break;
-      default:
-    }
-    if ($request['MPAYTID']) {
-      $payment->mpaytid = (int) $request['MPAYTID'];
-    }
-    if ($payment->getStatus()->status != $status) {
-      $payment->setStatus(new PaymentStatusItem($status, REQUEST_TIME, $payment->pid));
-      entity_save('payment', $payment);
-    }
-
-    watchdog(
-      'mpay24_payment',
-      "Confirmation Interface: OPERATION: \"@o\", STATUS: \"@s\", TID: \"@t\", PRICE: \"@p\", CURRENCY: \"@c\", MPAYTID: \"@m\"",
-      array(
-        '@o' => $request['OPERATION'],
-        '@s' => $request['STATUS'],
-        '@t' => $request['TID'],
-        '@p' => $request['PRICE'],
-        '@c' => $request['CURRENCY'],
-        '@m' => $request['MPAYTID'],
-      ),
-      WATCHDOG_INFO
-    );
-
-    drupal_add_http_header('Content-Type', 'text/plain');
+    $request = new ConfirmationRequest($payment);
+    $request->validate($_GET);
+    $request->setStatus();
     print 'OK: ';
-    exit(0); // need to get unthemed output.
   } catch (PaymentException $e) {
-    watchdog('mpay24_payment', 'Exception: ' . $e->getMessage());
-    drupal_add_http_header('Content-Type', 'text/plain');
+    watchdog('mpay24_payment', 'Exception in confirmation request: ' . $e->getMessage());
     print 'ERROR: ' . $e->getMessage();
-    exit(0); // need to get unthemed output.
   }
+  exit(0); // need to get unthemed output.
 }
 
 function mpay24_payment_confirmation_wait(Payment $payment) {
@@ -155,9 +94,29 @@ function mpay24_payment_confirmation_status(Payment $payment) {
 }
 
 function mpay24_payment_confirmation_error(Payment $payment) {
+  try {
+    $request = new ConfirmationRequest($payment);
+    $request->validate();
+    $request->setStatus();
+  } catch(PaymentException $e) {
+    watchdog('mpay24_payment', 'Exception in error request: ' . $e->getMessage());
+    if ($payment->getStatus() != PAYMENT_STATUS_FAILED) {
+      $payment->setStatus(new PaymentStatusItem(PAYMENT_STATUS_FAILED, REQUEST_TIME, $payment->pid));
+    }
+  }
+
   watchdog('mpay24_payment', 'Reported an error to the user of Payment @pid.', array('@pid' => $payment->pid));
 
-  return array(
-    '#markup' => '<div class="mo-dialog-wrapper visible"><div class="mo-dialog-content loading"><p>'.t('An error occured. Please try again later.').'</p></div></div>'
+  if (isset($payment->context_data['context'])) {
+    $context = $payment->context_data['context'];
+    $link = $context->reenterLink($payment);
+    $message = t('An error occured while processing your payment. Please !tryagainlink or contact the site administrator if the problem persists.', array(
+      '!tryagainlink' => l('try again', $link['path'], $link),
+    ));
+  } else {
+    $message = t('An error occured while processing your payment. Contact the site administrator if the problem persists.');
+  }
+  $output = array(
+    '#markup' => $message,
   );
 }

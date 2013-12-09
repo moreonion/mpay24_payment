@@ -3,7 +3,7 @@
 namespace Drupal\mpay24_payment;
 
 class CreditCardPaymentTest extends \DrupalUnitTestCase {
-  public function testValidVisa() {
+  public function createCreditCardPayment($issuer, $number, $secureCode, $expiry) {
     $controller = new \PaymentMethodControllerMPay24CreditCard();
     $method = new \PaymentMethod();
     $method->controller = $controller;
@@ -18,14 +18,24 @@ class CreditCardPaymentTest extends \DrupalUnitTestCase {
       'description' => 'Test payment',
       'name' => 'test',
     )));
-    $now = \date_create();
     $payment->method_data += array(
-      'issuer' => 'visa',
-      'credit_card_number' => '4444333322221111',
-      'secure_code' => '123',
-      'expiry_date' => '05/'.((int)$now->format('y')+1),
+      'issuer' => $issuer,
+      'credit_card_number' => $number,
+      'secure_code' => $secureCode,
+      'expiry_date' => $expiry,
     );
     $payment->form_state = array();
+    return $payment;
+  }
+  public function testValidVisa() {
+    $now = \date_create();
+    $payment = $this->createCreditCardPayment('visa', '4444333322221111', '123', new \DateTime(((int)$now->format('Y')+1) . '-05'));
+    $payment->execute();
+  }
+  public function testValidVisa3DS() {
+    $now = \date_create();
+    $payment = $this->createCreditCardPayment('visa', '4444333322221111', '123', new \DateTime(((int)$now->format('Y')+1) . '-06'));
+    $payment->finish_callback = 'var_export';
     $payment->execute();
   }
 }

@@ -8,23 +8,23 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
     $this->title = 'Mpay24 Dummy';
     $this->description = 'This payment method allows to mock server-side behavior.';
   }
-  
+
   /**
    * Implements PaymentMethodController::validate().
    */
   function validate(Payment $payment, PaymentMethod $payment_method, $strict) {
     if (!$strict)
       return;
-    
+
     sleep($payment->context_data['method_data']['validate_timeout']);
   }
-  
+
   /**
    * Implements PaymentMethodController::execute().
    */
   function execute(Payment $payment) {
     $request = new \mpay24\Request($payment);
-    
+
     $data = &$payment->context_data['method_data'];
     switch ($data['action']) {
       case 'error':
@@ -44,7 +44,7 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
         $payment->form_state['redirect'] = $request->getSuccessURL();
     }
   }
-  
+
   /**
    * Set the target status once the timeout has run out.
    */
@@ -65,7 +65,7 @@ function mpay24_payment_dummy_form_elements(array $element, array &$form_state) 
     '#description' => 'Timeout before redirecting to another URL.',
     '#options' => array(0 => 'Zero', 1 => '1 second', 5 => '5 seconds', 30 => '30 seconds', 120 => '2 minutes'),
   );
-  
+
   $element['action'] = array(
     '#type' => 'select',
     '#title' => 'Submit action',
@@ -77,7 +77,7 @@ function mpay24_payment_dummy_form_elements(array $element, array &$form_state) 
       'error' => 'Return something erronous',
     ),
   );
-  
+
   $element['poll'] = array(
     '#type' => 'fieldset',
     '#title' => 'Poll behavior',
@@ -88,7 +88,7 @@ function mpay24_payment_dummy_form_elements(array $element, array &$form_state) 
       ),
     ),
   );
-  
+
   $element['poll']['timeout'] = array(
     '#type' => 'select',
     '#title' => 'Timeout',

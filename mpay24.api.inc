@@ -46,27 +46,26 @@ class Request {
 
     public static function creditCard(&$payment) {
         $obj = new Request($payment);
-        $method_data = &$payment->method_data;
-        # a guard to prevent the later ->format() to fail
-        if (get_class($method_data['expiry_date']) == "DateTime") {
-          $expiry_date = $method_data['expiry_date'];
-        } else {
+        $context = &$payment->context_data['context'];
+        // a guard to prevent the later ->format() to fail
+        $expiry_date = $context->dataValue('expiry_date');
+        if (get_class($expiry_date) != "DateTime") {
           $expiry_date = date_create();
         }
 
-        if (in_array($method_data['issuer'], array('visa', 'mastercard'))) {
+        if (in_array($context->dataValue('issuer'), array('visa', 'mastercard'))) {
           $auth_3ds = TRUE;
         } else {
-          $auth_3ds = (bool) $method_data['auth_3ds'];
+          $auth_3ds = (bool) $context->dataValue('auth_3ds');
         }
 
         $obj->prepare('ACCEPTPAYMENT');
         $obj->addData(array(
             'P_TYPE'     => 'CC',
-            'BRAND'      => $method_data['issuer'],
-            'IDENTIFIER' => $method_data['credit_card_number'],
+            'BRAND'      => $context->dataValue('issuer'),
+            'IDENTIFIER' => $context->dataValue('credit_card_number'),
             'EXPIRY'     => $expiry_date->format('ym'),
-            'CVC'        => $method_data['secure_code'],
+            'CVC'        => $context->dataValue('secure_code'),
             'AUTH_3DS'   => $auth_3ds ? 'Y' : 'N',
         ));
 
@@ -75,7 +74,7 @@ class Request {
 
     public static function onlineBanking(&$payment) {
         $obj = new Request($payment);
-        $obj->addData($payment->method_data);
+        $obj->addData($payment->context_data['context']);
         $obj->enabled_payment_types = array('EPS');
         $obj->prepare('SELECTPAYMENT');
 
@@ -178,9 +177,9 @@ class Request {
     }
 
     protected function getCustomerName() {
-        // make sure that this is in the payment data
-        return $this->payment->method_data['first_name'] .
-          $this->payment->method_data['last_name'];
+      // make sure that this is in the payment data
+      return $this->payment->context_data['context']->dataValue('first_name') .
+        $this->payment->context_data['context']->dataValue('last_name');
     }
 
     protected function getMerchantID() {

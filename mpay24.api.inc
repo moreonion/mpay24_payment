@@ -1,8 +1,11 @@
-<?php namespace mpay24; /**
+<?php
+/**
 * @file
 * Provides a class to make communication with mpay24 services easier.
 *
 */
+
+namespace mpay24;
 
 define('MPAY24_PAYMENT_TEST_API_URL', 'https://test.mpay24.com/app/bin/etpv5');
 define('MPAY24_PAYMENT_API_URL', 'https://mpay24.com/app/bin/etpv5');
@@ -48,24 +51,24 @@ class Request {
         $obj = new Request($payment);
         $context = &$payment->context_data['context'];
         // a guard to prevent the later ->format() to fail
-        $expiry_date = $context->dataValue('expiry_date');
+        $expiry_date = $context->value('expiry_date');
         if (get_class($expiry_date) != "DateTime") {
           $expiry_date = date_create();
         }
 
-        if (in_array($context->dataValue('issuer'), array('visa', 'mastercard'))) {
+        if (in_array($context->value('issuer'), array('visa', 'mastercard'))) {
           $auth_3ds = TRUE;
         } else {
-          $auth_3ds = (bool) $context->dataValue('auth_3ds');
+          $auth_3ds = (bool) $context->value('auth_3ds');
         }
 
         $obj->prepare('ACCEPTPAYMENT');
         $obj->addData(array(
             'P_TYPE'     => 'CC',
-            'BRAND'      => $context->dataValue('issuer'),
-            'IDENTIFIER' => $context->dataValue('credit_card_number'),
+            'BRAND'      => $context->value('issuer'),
+            'IDENTIFIER' => $context->value('credit_card_number'),
             'EXPIRY'     => $expiry_date->format('ym'),
-            'CVC'        => $context->dataValue('secure_code'),
+            'CVC'        => $context->value('secure_code'),
             'AUTH_3DS'   => $auth_3ds ? 'Y' : 'N',
         ));
 
@@ -178,8 +181,8 @@ class Request {
 
     protected function getCustomerName() {
       // make sure that this is in the payment data
-      return $this->payment->context_data['context']->dataValue('first_name') .
-        $this->payment->context_data['context']->dataValue('last_name');
+      return $this->payment->context_data['context']->value('first_name') .
+        $this->payment->context_data['context']->value('last_name');
     }
 
     protected function getMerchantID() {

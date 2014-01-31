@@ -49,26 +49,26 @@ class Request {
 
     public static function creditCard(&$payment) {
         $obj = new Request($payment);
-        $context = &$payment->context_data['context'];
+        $method_data = &$payment->method_data;
         // a guard to prevent the later ->format() to fail
-        $expiry_date = $context->value('expiry_date');
+        $expiry_date = $method_data['expiry_date'];
         if (get_class($expiry_date) != "DateTime") {
           $expiry_date = date_create();
         }
 
-        if (in_array($context->value('issuer'), array('visa', 'mastercard'))) {
+        if (in_array($method_data['issuer'], array('visa', 'mastercard'))) {
           $auth_3ds = TRUE;
         } else {
-          $auth_3ds = (bool) $context->value('auth_3ds');
+          $auth_3ds = (bool) $method_data['auth_3ds'];
         }
 
         $obj->prepare('ACCEPTPAYMENT');
         $obj->addData(array(
             'P_TYPE'     => 'CC',
-            'BRAND'      => $context->value('issuer'),
-            'IDENTIFIER' => $context->value('credit_card_number'),
+            'BRAND'      => $method_data['issuer'],
+            'IDENTIFIER' => $method_data['credit_card_number'],
             'EXPIRY'     => $expiry_date->format('ym'),
-            'CVC'        => $context->value('secure_code'),
+            'CVC'        => $method_data['secure_code'],
             'AUTH_3DS'   => $auth_3ds ? 'Y' : 'N',
         ));
 
@@ -181,8 +181,8 @@ class Request {
 
     protected function getCustomerName() {
       // make sure that this is in the payment data
-      return $this->payment->context_data['context']->value('first_name') .
-        $this->payment->context_data['context']->value('last_name');
+      return $this->payment->context_data['context']->valueByKey('first_name') .
+        $this->payment->context_data['context']->valueByKey('last_name');
     }
 
     protected function getMerchantID() {
@@ -230,7 +230,7 @@ class Response {
         watchdog('mpay24_payment', 'mpay24 response for payment !pid: !response', array(
           '!pid' => $this->payment->pid,
           '!response' => var_export($this, TRUE),
-        ), WATCHDOG_DEBUG);
+          ), WATCHDOG_DEBUG);
       }
 
       if (isset($response->code) && $response->code === '200') {

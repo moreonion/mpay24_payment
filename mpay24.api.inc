@@ -77,6 +77,7 @@ class Request {
 
     public static function onlineBanking(&$payment) {
         $obj = new Request($payment);
+        $obj->addData($payment->method_data);
         $obj->enabled_payment_types = array('EPS');
         $obj->prepare('SELECTPAYMENT');
 
@@ -229,7 +230,7 @@ class Response {
         watchdog('mpay24_payment', 'mpay24 response for payment !pid: !response', array(
           '!pid' => $this->payment->pid,
           '!response' => var_export($this, TRUE),
-          ), WATCHDOG_DEBUG);
+        ), WATCHDOG_DEBUG);
       }
 
       if (isset($response->code) && $response->code === '200') {

@@ -77,7 +77,6 @@ class Request {
 
     public static function onlineBanking(&$payment) {
         $obj = new Request($payment);
-        $obj->addData($payment->context_data['context']);
         $obj->enabled_payment_types = array('EPS');
         $obj->prepare('SELECTPAYMENT');
 

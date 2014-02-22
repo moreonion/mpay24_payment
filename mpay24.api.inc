@@ -268,9 +268,9 @@ class Response {
           $this->handleAPIError();
       }
       if (variable_get('mpay24_payment_devel', 0) || variable_get('devel_mode', 0)) {
-        watchdog('mpay24_payment', 'Redirect paymen !pid to !uri.', array(
+        watchdog('mpay24_payment', 'Redirect payment !pid to !uri.', array(
           '!pid' => $this->payment->pid,
-          '!uri' => $this->uri,
+          '!uri' => var_export($this->uri, TRUE),
         ), WATCHDOG_DEBUG);
       }
     }

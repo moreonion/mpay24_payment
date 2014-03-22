@@ -98,7 +98,7 @@ class Request {
                 array(
                     'CURRENCY'         => 'EUR',
                     'TID'              => $this->payment->tid,
-                    'PRICE'            => $this->payment->totalAmount(false), // in cent
+                    'PRICE'            => $this->payment->totalAmount(false) * 100, // in cent
                     'CUSTOMER'         => $this->getCustomerName(),
                     'SUCCESS_URL'      => $this->getSuccessURL(),
                     'ERROR_URL'        => $this->getErrorURL(),

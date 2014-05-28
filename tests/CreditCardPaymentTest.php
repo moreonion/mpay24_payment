@@ -1,5 +1,7 @@
 <?php
 
+define('MERCHANT_TESTID', '99999');
+
 namespace Drupal\mpay24_payment;
 
 class CreditCardPaymentTest extends \DrupalUnitTestCase {
@@ -9,7 +11,7 @@ class CreditCardPaymentTest extends \DrupalUnitTestCase {
     $method->controller = $controller;
     $method->controller_data = array(
       'testmode' => TRUE,
-      'merchantid' => '91485' 
+      'merchantid' => MERCHANT_TESTID, 
     );
     $payment = new \Payment();
     $payment->method = $method;

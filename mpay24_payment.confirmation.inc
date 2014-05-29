@@ -75,37 +75,12 @@ function mpay24_payment_confirmation_status(Payment $payment) {
 function mpay24_payment_confirmation_error(Payment $payment) {
   $request = new ErrorRequest($payment);
   $request->validate($_GET);
-  $request->setStatus();
   watchdog('mpay24_payment', 'Reported an error to the user of Payment @pid.', array('@pid' => $payment->pid));
-
-  if (isset($payment->context_data['context'])) {
-    $context = $payment->context_data['context'];
-    $link = $context->reenterLink($payment);
-    $message = t('An error occured while processing your payment. Please !tryagainlink or contact the site administrator if the problem persists.', array(
-      '!tryagainlink' => l('try again', $link['path'], $link),
-    ));
-  } else {
-    $message = t('An error occured while processing your payment. Contact the site administrator if the problem persists.');
-  }
-  $output = array(
-    '#markup' => $message,
-  );
-  return $output;
+  $request->setStatus();
 }
 
 function mpay24_payment_confirmation_success(Payment $payment) {
   $request = new SuccessRequest($payment);
   $request->validate($_GET);
   $request->setStatus();
-
-  if (isset($payment->context_data['context'])) {
-    $context = $payment->context_data['context'];
-    drupal_goto($context->getSuccessUrl());
-  } else {
-    $message = t('Your payment was successful. Thanks.');
-  }
-  $output = array(
-    '#markup' => $message,
-  );
-  return $output;
 }

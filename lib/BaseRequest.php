@@ -32,7 +32,7 @@ abstract class BaseRequest {
     $status = $this->mapppedStatus();
     if ($payment->getStatus()->status != $status) {
       $payment->setStatus(new \PaymentStatusItem($status, REQUEST_TIME, $payment->pid));
-      \entity_save('payment', $payment);
     }
+    $payment->finish();
   }
 }

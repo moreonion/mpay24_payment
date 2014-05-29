@@ -24,8 +24,9 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
    */
   function execute(Payment $payment) {
     $request = new \mpay24\Request($payment);
-    
+
     $data = &$payment->context_data['method_data'];
+    $options['query']['TID'] = $payment->tid;
     switch ($data['action']) {
       case 'error':
         echo 'Some test output';
@@ -33,15 +34,14 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
       case 'poll':
         $payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_REDIRECT));
         $path = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $payment->pid;
-        $options['query']['TID'] = $payment->tid;
         $payment->form_state['redirect'] = array($path, $options);
         break;
       case 'error_page':
-        $payment->form_state['redirect'] = $request->getErrorURL();
+        $payment->form_state['redirect'] = array($request->getErrorURL(), $options);
         break;
       case 'success_page':
       default:
-        $payment->form_state['redirect'] = $request->getSuccessURL();
+        $payment->form_state['redirect'] = array($request->getSuccessURL(), $options);;
     }
   }
   

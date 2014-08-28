@@ -42,6 +42,17 @@ function mpay24_payment_menu() {
   return $items;
 }
 
+function mpay24_payment_payment_status_info() {
+  return array(
+    new PaymentStatusInfo(array(
+      'description' => t('User was redirected to mpay24. And we are waiting for them to redirect him/her back.'),
+      'status' => PAYMENT_MPAY24_STATUS_REDIRECT,
+      'parent' => PAYMENT_STATUS_PENDING,
+      'title' => t('Redirected (waiting for the user to return).'),
+    )),
+  );
+}
+
 /**
  * Custom access handler
  *

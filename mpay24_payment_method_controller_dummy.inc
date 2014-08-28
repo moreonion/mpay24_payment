@@ -27,6 +27,7 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
 
     $data = &$payment->context_data['method_data'];
     $options['query']['TID'] = $payment->tid;
+    $redirect = NULL;
     switch ($data['action']) {
       case 'error':
         echo 'Some test output';
@@ -34,14 +35,23 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
       case 'poll':
         $payment->setStatus(new \PaymentStatusItem(PAYMENT_MPAY24_STATUS_REDIRECT));
         $path = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $payment->pid;
-        $payment->form_state['redirect'] = array($path, $options);
+        $redirect = array($path, $options);
         break;
       case 'error_page':
-        $payment->form_state['redirect'] = array($request->getErrorURL(), $options);
+        $redirect = array($request->getErrorURL(), $options);
         break;
       case 'success_page':
       default:
-        $payment->form_state['redirect'] = array($request->getSuccessURL(), $options);;
+        $redirect = array($request->getSuccessURL(), $options);;
+    }
+    if ($redirect) {
+      if (isset($payment->context_data['context'])) {
+        $context = $payment->context_data['context'];
+        $context->redirect($redirect[0], $redirect[1]);
+      }
+      else {
+        drupal_goto($redirect[0], $redirect[1]);
+      }
     }
   }
   

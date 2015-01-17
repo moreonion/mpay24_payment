@@ -2,6 +2,7 @@ name = MPay24 (Payment)
 description = A payment method type that uses mpay24.com
 core = 7.x
 dependencies[] = payment
+dependencies[] = payment_context
 dependencies[] = payment_forms
 package = Payment
 

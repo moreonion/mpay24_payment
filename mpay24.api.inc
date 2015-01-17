@@ -181,8 +181,8 @@ class Request {
 
     protected function getCustomerName() {
       // make sure that this is in the payment data
-      return $this->payment->context_data['context']->value('first_name') .
-        $this->payment->context_data['context']->value('last_name');
+      return $this->payment->contextObj->value('first_name') .
+        $this->payment->contextObj->value('last_name');
     }
 
     protected function getMerchantID() {

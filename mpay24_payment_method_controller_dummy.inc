@@ -15,8 +15,8 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
   function validate(Payment $payment, PaymentMethod $payment_method, $strict) {
     if (!$strict)
       return;
-    
-    sleep($payment->context_data['method_data']['validate_timeout']);
+
+    sleep($payment->context_data['method_data']['validate_timeout'];
   }
   
   /**
@@ -45,13 +45,7 @@ class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
         $redirect = array($request->getSuccessURL(), $options);;
     }
     if ($redirect) {
-      if (isset($payment->context_data['context'])) {
-        $context = $payment->context_data['context'];
-        $context->redirect($redirect[0], $redirect[1]);
-      }
-      else {
-        drupal_goto($redirect[0], $redirect[1]);
-      }
+      $payment->contextObj->redirect($redirect[0], $redirect[1]);
     }
   }
   

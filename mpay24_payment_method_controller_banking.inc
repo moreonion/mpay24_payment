@@ -31,12 +31,6 @@ class PaymentMethodControllerMPay24OnlineBanking extends PaymentMethodController
    */
   function execute(Payment $payment) {
     $response = new \mpay24\Response($payment, \mpay24\Request::onlineBanking($payment));
-    if (isset($payment->context_data['context'])) {
-      $context = $payment->context_data['context'];
-      $context->redirect($response->uri);
-    }
-    else {
-      drupal_goto($response->uri);
-    }
+    $payment->contextObj->redirect($response->uri);
   }
 }

@@ -29,12 +29,6 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
    */
   function execute(Payment $payment) {
     $response = $this->getResponse($payment);
-    if (isset($payment->context_data['context'])) {
-      $context = $payment->context_data['context'];
-      $context->redirect($response->uri);
-    }
-    else {
-      drupal_goto($response->uri);
-    }
+    $payment->contextObj->redirect($response->uri);
   }
 }

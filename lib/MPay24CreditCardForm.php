@@ -13,7 +13,7 @@ namespace Drupal\mpay24_payment;
  */
 class MPay24CreditCardForm extends \Drupal\payment_forms\CreditCardForm {
   public function validateForm(array &$element, array &$form_state, \Payment $payment) {
-    parent::validateForm($element, $form_state);
+    parent::validateForm($element, $form_state, $payment);
 
     if (form_get_errors()) {
       return;

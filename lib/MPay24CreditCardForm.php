@@ -12,22 +12,22 @@ namespace Drupal\mpay24_payment;
  *
  */
 class MPay24CreditCardForm extends \Drupal\payment_forms\CreditCardForm {
-  public function validateForm(array &$element, array &$form_state) {
+  public function validateForm(array &$element, array &$form_state, \Payment $payment) {
     parent::validateForm($element, $form_state);
 
     if (form_get_errors()) {
       return;
     } else {
-      $this->validate_online_via_mpay24($element, $form_state);
+      $this->validate_online_via_mpay24($element, $form_state, $payment);
     }
 
     // needed for later execute()
-    $form_state['payment']->form_state = &$form_state;
+    $payment->form_state = &$form_state;
   }
 
-  protected function validate_online_via_mpay24(array $element,array &$form_state) {
+  protected function validate_online_via_mpay24(array $element,array &$form_state, \Payment $payment) {
     try {
-      $form_state['payment']->method->validate($form_state['payment'], TRUE);
+      $payment->method->validate($payment, TRUE);
     } catch (\mpay24\PaymentMpay24ApiException $e) {
       $code = $e->getErrorCode();
       switch ($code) {

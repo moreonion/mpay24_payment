@@ -29,6 +29,7 @@ class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPa
    */
   function execute(Payment $payment) {
     $response = $this->getResponse($payment);
-    $payment->contextObj->redirect($response->uri);
+    $link = $response->link;
+    $payment->contextObj->redirect($link['path'], $link);
   }
 }

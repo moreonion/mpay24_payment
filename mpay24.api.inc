@@ -257,20 +257,21 @@ class Response {
 
       switch($this->data['returncode']) {
         case 'REDIRECT':
-          $this->uri = $this->data['location'];
+          $this->link = array('path' => $this->data['location']);
           break;
         case 'OK':
-          $path = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $this->payment->pid;
+          $options['path'] = MPAY24_PAYMENT_CONFIRMATION_WAIT_URL . (int) $this->payment->pid;
           $options['query']['TID'] = $this->payment->tid;
-          $this->uri = array($path, $options);
+          $this->link = $options;
           break;
         default:
           $this->handleAPIError();
       }
+      $this->link += array('options' => array());
       if (variable_get('mpay24_payment_devel', 0) || variable_get('devel_mode', 0)) {
         watchdog('mpay24_payment', 'Redirect payment !pid to !uri.', array(
           '!pid' => $this->payment->pid,
-          '!uri' => var_export($this->uri, TRUE),
+          '!uri' => var_export($this->link, TRUE),
         ), WATCHDOG_DEBUG);
       }
     }

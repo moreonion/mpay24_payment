@@ -31,6 +31,7 @@ class PaymentMethodControllerMPay24OnlineBanking extends PaymentMethodController
    */
   function execute(Payment $payment) {
     $response = new \mpay24\Response($payment, \mpay24\Request::onlineBanking($payment));
-    $payment->contextObj->redirect($response->uri);
+    $link = $response->link;
+    $payment->contextObj->redirect($link['path'], $link);
   }
 }

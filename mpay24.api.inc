@@ -8,7 +8,7 @@
 namespace mpay24;
 
 define('MPAY24_PAYMENT_TEST_API_URL', 'https://test.mpay24.com/app/bin/etpv5');
-define('MPAY24_PAYMENT_API_URL', 'https://mpay24.com/app/bin/etpv5');
+define('MPAY24_PAYMENT_API_URL', 'https://www.mpay24.com/app/bin/etpv5');
 
 class PaymentMpay24ApiException extends \PaymentException {
   protected $errorCode;

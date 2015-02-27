@@ -33,6 +33,5 @@ abstract class BaseRequest {
     if ($payment->getStatus()->status != $status) {
       $payment->setStatus(new \PaymentStatusItem($status, REQUEST_TIME, $payment->pid));
     }
-    $payment->finish();
   }
 }

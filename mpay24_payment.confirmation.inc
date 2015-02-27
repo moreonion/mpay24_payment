@@ -18,6 +18,7 @@ function mpay24_payment_confirmation_interface_handler(Payment $payment) {
     $request = new ConfirmationRequest($payment);
     $request->validate($_GET);
     $request->setStatus();
+    entity_save('payment', $payment);
     print 'OK: ';
   } catch (PaymentException $e) {
     watchdog('mpay24_payment', 'Exception in confirmation request: ' . $e->getMessage());
@@ -77,10 +78,12 @@ function mpay24_payment_confirmation_error(Payment $payment) {
   $request->validate($_GET);
   watchdog('mpay24_payment', 'Reported an error to the user of Payment @pid.', array('@pid' => $payment->pid));
   $request->setStatus();
+  $payment->finish();
 }
 
 function mpay24_payment_confirmation_success(Payment $payment) {
   $request = new SuccessRequest($payment);
   $request->validate($_GET);
   $request->setStatus();
+  $payment->finish();
 }

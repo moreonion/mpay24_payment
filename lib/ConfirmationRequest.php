@@ -43,6 +43,4 @@ class ConfirmationRequest extends BaseRequest {
     }
     return $status;
   }
-
-
 }

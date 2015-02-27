@@ -114,7 +114,7 @@ class Request {
             'data'   => drupal_http_build_query($this->data));
         $this->response = drupal_http_request($this->api_url, $options);
         if (variable_get('devel_mode', 0)) {
-          watchdog('mpay24_payment', 'Received response: !response', array('!response' => var_export($this->response, TRUE)), WATCHDOG_DEBUG);
+          watchdog('mpay24_payment', 'Received response: !response', array('!response' => print_r($this->response, TRUE)), WATCHDOG_DEBUG);
 	}
         return $this->response;
     }
@@ -229,7 +229,7 @@ class Response {
       if (variable_get('mpay24_payment_devel', 0) || variable_get('devel_mode', 0)) {
         watchdog('mpay24_payment', 'mpay24 response for payment !pid: !response', array(
           '!pid' => $this->payment->pid,
-          '!response' => var_export($this, TRUE),
+          '!response' => print_r($this, TRUE),
         ), WATCHDOG_DEBUG);
       }
 
@@ -271,7 +271,7 @@ class Response {
       if (variable_get('mpay24_payment_devel', 0) || variable_get('devel_mode', 0)) {
         watchdog('mpay24_payment', 'Redirect payment !pid to !uri.', array(
           '!pid' => $this->payment->pid,
-          '!uri' => var_export($this->link, TRUE),
+          '!uri' => print_r($this->link, TRUE),
         ), WATCHDOG_DEBUG);
       }
     }

@@ -1,12 +1,15 @@
 <?php
 
-
 /**
  * @file
  * MPay24 payment method controller.
  * This controller executes a payment trough mpay24s full integration API.
  */
-class PaymentMethodControllerMPay24 extends PaymentMethodController {
+
+namespace Drupal\mpay24_payment;
+
+class ControllerBase extends \PaymentMethodController {
+
   public $controller_data_defaults = array(
     'merchantid'             => '',
     'testmode'               => 1,
@@ -19,6 +22,8 @@ class PaymentMethodControllerMPay24 extends PaymentMethodController {
 
 
   function __construct() {
+    require_once drupal_get_path('module', 'mpay24_payment') . '/mpay24.api.inc';
+
     $this->title = t('mPay24');
     $this->description = t("A Payment API method to transfer money using the payment provider https://mpay24.com");
 

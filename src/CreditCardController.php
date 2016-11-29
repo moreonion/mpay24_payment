@@ -4,9 +4,9 @@
  * MPay24 payment method controller for credit card payments
  */
 
-module_load_include('inc', 'mpay24_payment', 'mpay24.api');
+namespace Drupal\mpay24_payment;
 
-class PaymentMethodControllerMPay24CreditCard extends PaymentMethodControllerMPay24 {
+class CreditCardController extends ControllerBase {
   protected $response = NULL;
   protected $exception = NULL;
 

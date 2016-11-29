@@ -78,9 +78,9 @@ function mpay24_payment_confirmation_access($payment) {
  */
 function mpay24_payment_payment_method_controller_info() {
   return array(
-    'PaymentMethodControllerMPay24CreditCard',
-    'PaymentMethodControllerMPay24OnlineBanking',
-    'PaymentMethodControllerMPay24Dummy',
+    'PaymentMethodControllerMPay24CreditCard' => '\\Drupal\\mpay24_payment\\CreditCardController',
+    'PaymentMethodControllerMPay24OnlineBanking' => '\\Drupal\\mpay24_payment\\OnlineBankingController',
+    'PaymentMethodControllerMPay24Dummy' => '\\Drupal\\mpay24_payment\\DummyController',
   );
 }
 

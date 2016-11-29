@@ -1,13 +1,13 @@
 <?php
 
-module_load_include('inc', 'mpay24_payment', 'mpay24.api');
-module_load_include('php', 'payment_forms', 'lib/OnlineBankingForm');
-
 /**
  * @file
  * MPay24 payment method controller for online banking payments.
  */
-class PaymentMethodControllerMPay24OnlineBanking extends PaymentMethodControllerMPay24 {
+
+namespace Drupal\mpay24_payment;
+
+class OnlineBankingController extends ControllerBase {
   function __construct() {
     parent::__construct();
 

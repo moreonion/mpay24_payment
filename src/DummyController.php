@@ -1,10 +1,13 @@
 <?php
-require_once dirname(__FILE__) . '/mpay24.api.inc';
 
-class PaymentMethodControllerMPay24Dummy extends  PaymentMethodControllerMPay24{
+namespace Drupal\mpay24_payment;
+
+class DummyController extends  ControllerBase {
+
   public $payment_method_configuration_form_elements_callback = 'mpay24_payment_dummy_configuration_form_elements';
   public $payment_configuration_form_elements_callback = 'mpay24_payment_dummy_form_elements';
   public function __construct() {
+    parent::__construct();
     $this->title = 'Mpay24 Dummy';
     $this->description = 'This payment method allows to mock server-side behavior.';
   }

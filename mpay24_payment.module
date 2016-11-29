@@ -8,6 +8,8 @@ define('MPAY24_PAYMENT_CONFIRMATION_WAIT_URL', 'mpay24_payment/confirm/wait/');
 define('MPAY24_PAYMENT_ERROR_URL', 'mpay24_payment/confirm/error/');
 define('MPAY24_PAYMENT_SUCCESS_URL', 'mpay24_payment/confirm/success/');
 
+use \Drupal\mpay24_payment\ControllerBase;
+
 /**
  * Implements hook_menu()
  */
@@ -85,51 +87,6 @@ function mpay24_payment_payment_method_controller_info() {
 }
 
 /**
- * Form build callback: implements
- * PaymentMethodController::payment_method_configuration_form_elements_callback.
- *
- * @return array
- *   A Drupal form.
- */
-function mpay24_payment_payment_method_configuration_form_elements(array $form, array &$form_state) {
-  $controller_data = $form_state['payment_method']->controller_data;
-
-  $elements['merchantid'] = array(
-    '#type' => 'textfield',
-    '#title' => t('MPay24 MerchantID'),
-    '#description' => t('Available from MPay24 support.'),
-    '#default_value' => isset($controller_data['merchantid']) ? $controller_data['merchantid'] : '',
-  );
-
-  $elements['testmode'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Use the test API') . ' (test.mpay24.com)',
-    '#description' => t('Requires a different MerchantID.'),
-    '#default_value' => isset($controller_data['testmode']) ? $controller_data['testmode'] : '',
-  );
-
-  $elements['request_timeout'] = array(
-    '#type'          => 'textfield',
-    '#title'         => t('Timeout for payment requests'),
-    '#description'   => t('Timeout for the payment request to MPay24 (in Seconds).'),
-    '#default_value' => isset($controller_data['request_timeout']) ? $controller_data['request_timeout'] : 100.0,
-  );
-
-  return $elements;
-}
-
-/**
- * Implements form validate callback for
- * payment_mpay24_payment_method_configuration_form_elements().
- */
-function mpay24_payment_payment_method_configuration_form_elements_validate(array $element, array &$form_state) {
-  $values = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
-  $form_state['payment_method']->controller_data['request_timeout'] = $values['request_timeout'];
-  $form_state['payment_method']->controller_data['merchantid'] = $values['merchantid'];
-  $form_state['payment_method']->controller_data['testmode'] = $values['testmode'];
-}
-
-/**
  * ************************************
  * Payment Method entity CRUD functions
  * ************************************
@@ -158,7 +115,7 @@ function mpay24_payment_entity_load(array $entities, $entity_type) {
  * Implements hook_ENTITY_TYPE_ACTION().
  */
 function mpay24_payment_payment_insert(Payment $payment) {
-  if ($payment->method->controller instanceof PaymentMethodControllerMPay24) {
+  if ($payment->method->controller instanceof ControllerBase) {
     db_insert('mpay24_payment_tids')
      ->fields(array(
        'pid' => $payment->pid,
@@ -169,7 +126,7 @@ function mpay24_payment_payment_insert(Payment $payment) {
   }
 }
 function mpay24_payment_payment_update(Payment $payment) {
-  if ($payment->method->controller instanceof PaymentMethodControllerMPay24) {
+  if ($payment->method->controller instanceof ControllerBase) {
     db_update('mpay24_payment_tids')
      ->fields(array(
        'tid' => isset($payment->tid) ? $payment->tid : '',
@@ -187,7 +144,7 @@ function mpay24_payment_payment_delete(Payment $payment) {
  * Implements hook_ENTITY_TYPE_ACTION().
  */
 function mpay24_payment_payment_method_insert(PaymentMethod $method) {
-  if ($method->controller instanceof PaymentMethodControllerMpay24)
+  if ($method->controller instanceof ControllerBase)
     $method->controller->insert($method);
 }
 
@@ -195,7 +152,7 @@ function mpay24_payment_payment_method_insert(PaymentMethod $method) {
  * Implements hook_ENTITY_TYPE_ACTION().
  */
 function mpay24_payment_payment_method_update(PaymentMethod $method) {
-  if ($method->controller instanceof PaymentMethodControllerMpay24)
+  if ($method->controller instanceof ControllerBase)
     $method->controller->update($method);
 }
 
@@ -203,6 +160,6 @@ function mpay24_payment_payment_method_update(PaymentMethod $method) {
  * Implements hook_ENTITY_TYPE_ACTION().
  */
 function mpay24_payment_payment_method_delete($method) {
-  if ($method->controller instanceof PaymentMethodControllerMpay24)
+  if ($method->controller instanceof ControllerBase)
     $method->controller->delete($method);
 }

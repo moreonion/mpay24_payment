@@ -16,8 +16,8 @@ class ControllerBase extends \PaymentMethodController {
     'request_timeout'        => 30.0,
   );
 
-  public $payment_method_configuration_form_elements_callback = 'mpay24_payment_payment_method_configuration_form_elements';
-  public $payment_configuration_form_elements_callback        = 'payment_forms_method_form';
+  public $payment_method_configuration_form_elements_callback = 'payment_forms_method_configuration_form';
+  public $payment_configuration_form_elements_callback = 'payment_forms_payment_form';
 
 
 
@@ -28,6 +28,10 @@ class ControllerBase extends \PaymentMethodController {
     $this->description = t("A Payment API method to transfer money using the payment provider https://mpay24.com");
 
     $this->currencies = array_fill_keys(array('EUR'), array());
+  }
+
+  public function configurationForm() {
+    return new ControllerConfigurationForm();
   }
 
   /**

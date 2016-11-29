@@ -12,10 +12,13 @@ class CreditCardController extends ControllerBase {
 
   function __construct() {
     parent::__construct();
-
     $this->title = t('mPay24 Credit Card');
-    $this->form = new \Drupal\mpay24_payment\MPay24CreditCardForm();
   }
+
+  public function paymentForm() {
+    return new CreditCardForm();
+  }
+
 
   function getResponse($payment) {
     return new \mpay24\Response($payment, \mpay24\Request::creditCard($payment));

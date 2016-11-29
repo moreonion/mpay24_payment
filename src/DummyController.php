@@ -24,7 +24,7 @@ class DummyController extends  ControllerBase {
   /**
    * Implements PaymentMethodController::validate().
    */
-  function validate(Payment $payment, PaymentMethod $payment_method, $strict) {
+  function validate(\Payment $payment, \PaymentMethod $payment_method, $strict) {
     if (!$strict)
       return;
 
@@ -34,7 +34,7 @@ class DummyController extends  ControllerBase {
   /**
    * Implements PaymentMethodController::execute().
    */
-  function execute(Payment $payment) {
+  function execute(\Payment $payment) {
     $request = new \mpay24\Request($payment);
 
     $data = &$payment->context_data['method_data'];
@@ -64,7 +64,7 @@ class DummyController extends  ControllerBase {
   /**
    * Set the target status once the timeout has run out.
    */
-  public function pollStatus(Payment $payment) {
+  public function pollStatus(\Payment $payment) {
     $status = $payment->getStatus();
     $data = &$payment->context_data['method_data']['poll'];
     if ($status->created + $data['timeout'] < REQUEST_TIME && $status->status != $data['status']) {

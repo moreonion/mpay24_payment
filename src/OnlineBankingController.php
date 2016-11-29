@@ -19,7 +19,7 @@ class OnlineBankingController extends ControllerBase {
   /**
    * Implements PaymentMethodController::validate().
    */
-  function validate(Payment $payment, PaymentMethod $payment_method, $strict) {
+  function validate(\Payment $payment, \PaymentMethod $payment_method, $strict) {
   }
 
 
@@ -29,7 +29,7 @@ class OnlineBankingController extends ControllerBase {
    * Redirect to a site which polls the status of mPay24s confirmation interface from
    * our server and set the payment status accordingly
    */
-  function execute(Payment $payment) {
+  function execute(\Payment $payment) {
     $response = new \mpay24\Response($payment, \mpay24\Request::onlineBanking($payment));
     $link = $response->link;
     $payment->contextObj->redirect($link['path'], $link);

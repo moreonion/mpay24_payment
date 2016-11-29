@@ -30,7 +30,7 @@ class CreditCardController extends ControllerBase {
    * Redirect to a site which polls the status of mPay24s confirmation interface from
    * our server and set the payment status accordingly
    */
-  function execute(Payment $payment) {
+  function execute(\Payment $payment) {
     $response = $this->getResponse($payment);
     $link = $response->link;
     $payment->contextObj->redirect($link['path'], $link);

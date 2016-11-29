@@ -3,12 +3,8 @@ description = A payment method type that uses mpay24.com
 core = 7.x
 dependencies[] = payment
 dependencies[] = payment_context
-dependencies[] = payment_forms
+dependencies[] = payment_controller_data
+dependencies[] = payment_forms (>= 7.x-2.0-beta1)
 dependencies[] = psr0
 package = Payment
-
-files[] = mpay24_payment_method_controller_banking.inc
-files[] = mpay24_payment_method_controller_common.inc
-files[] = mpay24_payment_method_controller_credit.inc
-files[] = mpay24_payment_method_controller_dummy.inc
 

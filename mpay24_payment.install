@@ -8,41 +8,11 @@
 /**
  * Implements hook_schema()
  *
- * Adds the schema for the mpay24_payment_payment_controllers table which
- * stores serialized PaymentMethodControllerMPay24 objects.
- *
  * Adds the schema for the mpay24_payment_confirmation_interface
  * table which stores all the requests send from mpay24 on the
  * confirmation interface
  */
 function mpay24_payment_schema() {
-  $schema['mpay24_payment_payment_method_controller'] = array(
-    'fields' => array(
-      'merchantid' => array(
-        'type' => 'text',
-      ),
-      'testmode' => array(
-        'type'     => 'int',
-        'not null' => TRUE,
-        'default'  => 0,
-      ),
-      'pmid' => array(
-        'type'     => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default'  => 0,
-      ),
-      'request_timeout' => array(
-        'type'     => 'float',
-        'unsigned' => TRUE,
-      ),
-    ),
-    'primary key' => array('pmid'),
-    'unique keys' => array(
-      'pmid' => array('pmid'),
-    ),
-  );
-
   $schema['mpay24_payment_tids'] = array(
     'fields' => array(
       'pid' => array(
@@ -74,8 +44,27 @@ function mpay24_payment_schema() {
     ),
   );
 
-
   return $schema;
+}
+
+/**
+ * Enable payment_controller_data and migrate configurations.
+ */
+function mpay24_payment_update_7001() {
+  if (!module_enable(['payment_controller_data'])) {
+    throw new DrupalUpdateException('Could not enable payment_controller_data.');
+  }
+
+  $result = db_select('mpay24_payment_payment_method_controller', 'd')
+    ->fields('d')
+    ->execute();
+  foreach ($result as $row) {
+    $method = entity_load_single('payment_method', $row->pmid);
+    $method->controller_data = (array) $row;
+    unset($method->controller_data['pmid']);
+    entity_save('payment_method', $method);
+  }
+  db_drop_table('mpay24_payment_payment_method_controller');
 }
 
 /**

@@ -37,19 +37,19 @@ class ControllerBase extends \PaymentMethodController {
   /**
    * Implements PaymentMethodController::validate().
    */
-  function validate(Payment $payment, PaymentMethod $payment_method, $strict) {
+  function validate(\Payment $payment, \PaymentMethod $payment_method, $strict) {
   }
 
   /**
    * Implements PaymentMethodController::execute().
    */
-  function execute(Payment $payment) {
+  function execute(\Payment $payment) {
   }
 
   /**
    * Allows the controller to act when the payment status is polled.
    */
-  public function pollStatus(Payment $payment) {
+  public function pollStatus(\Payment $payment) {
   }
 
 }

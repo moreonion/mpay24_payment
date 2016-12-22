@@ -12,7 +12,10 @@ class OnlineBankingController extends ControllerBase {
     parent::__construct();
 
     $this->title = t('mPay24 Online Banking');
-    $this->form = new \Drupal\payment_forms\OnlineBankingForm();
+  }
+
+  public function paymentForm() {
+    return new \Drupal\payment_forms\OnlineBankingForm();
   }
 
 
